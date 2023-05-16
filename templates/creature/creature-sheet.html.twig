@@ -1,0 +1,260 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+<style>
+    .size-cell{
+        width : 33%;
+    }
+</style>
+{% include 'navbar.html.twig' %}
+<div class="container">
+    <div class="text-center">
+        <h1>Fiche de créature</h1>
+    </div>
+    <div class="d-flex align-items-center me-4">
+        <a href="{{ path('creatureedit', {id: creature.id}) }}"> <button class="btn btn-sm btn-outline-secondary">Edit</button></a>
+        <h2 class="mx-2">Créature : {{ creature.name }}</h2>
+    </div>
+    <div>
+        <div class="d-flex">
+            <p class="me-2"><strong>NC : </strong></p>
+            <p>{{ creature.nc }}</p>
+        </div>
+        <div class="d-flex">
+            <p class="me-2"><strong>Famile de créature: </strong></p>
+            <p>{{ creature.family }}</p>
+        </div>
+        <div class="d-flex">
+            <p class="me-2"><strong>Type de boss : </strong></p>
+            <p>{{ creature.getBossType }}</p>
+        </div>
+        <div class="d-flex">
+            <p class="me-2"><strong>Rang de boss : </strong></p>
+            <p>{{ creature.getBossRank }}</p>
+        </div>
+    </div>
+    {% if creature.description or creature.story %}
+    <p>
+        {% if creature.description %}
+            {{ creature.description }}
+        </br>
+        {% endif %}
+        {% if creature.story %}
+            {{ creature.story }}
+        {% endif %}
+    </p>
+    {% endif %}
+    <div class="d-flex">
+        <p class="me-2"><strong>Reduction de dommages : </strong></p>
+        <p>{{ creature.rd }}</p>
+        <p>/{{ creature.getRdComment }}</p>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="table-responsive col-md-4">
+            <table class="table table-light">
+                <thead>
+                    <tr>
+                        <th scope="col">Catégorie de créature</th>
+                        <td scope="col">{{ creature.type }}</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="">
+                        <th scope="row">Milieu naturel</th>
+                        <td>{{ creature.getNaturalEnvironment }}</td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">Archétype</th>
+                        <td>{{ creature.archetype }}</td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">Taiile</th>
+                        <td>{{ creature.size }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-responsive col-md-4">
+            <table class="table table-light">
+                <thead>
+                    <tr>
+                        <td scope="col">Def : {{ creature.def }}</td>
+                        <td scope="col">Hp : {{ creature.getMaxHp }}</td>
+                        <td scope="col">Init : {{ creature.init }}</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="">
+                        <td scope="row">
+                            FOR
+                            {% if creature.getModFo >=0 %}+{% endif %}{{ creature.getModFo }}{% if creature.isAdvantageFo %}*{% endif %}
+                        </td>
+                        <td scope="row">
+                            DEX
+                            {% if creature.getModDex >=0 %}+{% endif %}{{ creature.getModDex }}{% if creature.isAdvantageDex %}*{% endif %}
+                        </td>
+                        <td scope="row">
+                            CON
+                            {% if creature.getModCon >=0 %}+{% endif %}{{ creature.getModCon }}{% if creature.isAdvantageCon %}*{% endif %}
+                        </td>
+                    </tr>
+                    <tr class="">
+                        <td scope="row">
+                            INT
+                            {% if creature.getModInt >=0 %}+{% endif %}{{ creature.getModInt }}{% if creature.isAdvantageInt %}*{% endif %}
+                        </td>
+                        <td scope="row">
+                            SAG
+                            {% if creature.getModSag >=0 %}+{% endif %}{{ creature.getModSag }}{% if creature.isAdvantageSag %}*{% endif %}
+                        </td>
+                        <td scope="row">
+                            CHA
+                            {% if creature.getModCha >=0 %}+{% endif %}{{ creature.getModCha }}{% if creature.isAdvantageCha %}*{% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <h3>Attaques</h3>
+        <div class="mx-2">
+            {% for attack in creature.attacks %}
+                <div class="d-flex">
+                    <p class="me-1"><strong>{{ attack.name }}</strong></p>
+                    <p class="me-1">+{{ attack.bonus }}</p>
+                    <p class="me-1"><strong>DM</strong></p>
+                    <p class="me-1">{{ attack.dm }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        {% if creature.getSpecialSkills %}
+        <h3>Cappacité spécial</h3>
+        {% for  special in creature.getSpecialSkills %}
+            <div class="mx-2 me-2">
+                <p>
+                    <strong>{{ special.name }} :</strong>
+                    {{ special.description }}
+                </p>
+            </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        {% if skills.path1.name %}
+        <h3>Voie</h3>
+            <div class="table-responsive">
+                <table class="table table-light table-bordered">
+                    <thead>
+                        <tr class="text-center">
+                            <th scope="col"</th>
+                            <th scope="col" class="size-cell">Voie 1</th>
+                            <th scope="col" class="size-cell">Voie 2</th>
+                            <th scope="col" class="size-cell">Voie 3</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="text-center">
+                            <th scope="row">R</th>
+                            <td>{{skills.path1.name}}</td>
+                            <td>{{skills.path2.name}}</td>
+                            <td>{{skills.path3.name}}</td>
+                        </tr>
+                        <tr class="">
+                            <th scope="row">1</th>
+                            <td><strong>{{skills.path1.comp.comp1.name}}</strong></br>{{skills.path1.comp.comp1.desc}}</td>
+                            <td><strong>{{skills.path2.comp.comp1.name}}</strong></br>{{skills.path2.comp.comp1.desc}}</td>
+                            <td><strong>{{skills.path3.comp.comp1.name}}</strong></br>{{skills.path3.comp.comp1.desc}}</td>
+                        </tr>
+                        <tr class="">
+                            <th scope="row">2</th>
+                            <td><strong>{{skills.path1.comp.comp2.name}}</strong></br>{{skills.path1.comp.comp2.desc}}</td>
+                            <td><strong>{{skills.path2.comp.comp2.name}}</strong></br>{{skills.path2.comp.comp2.desc}}</td>
+                            <td><strong>{{skills.path3.comp.comp2.name}}</strong></br>{{skills.path3.comp.comp2.desc}}</td>
+                        </tr>
+                        <tr class="">
+                            <th scope="row">3</th>
+                            <td><strong>{{skills.path1.comp.comp3.name}}</strong></br>{{skills.path1.comp.comp3.desc}}</td>
+                            <td><strong>{{skills.path2.comp.comp3.name}}</strong></br>{{skills.path2.comp.comp3.desc}}</td>
+                            <td><strong>{{skills.path3.comp.comp3.name}}</strong></br>{{skills.path3.comp.comp3.desc}}</td>
+                        </tr>
+                        <tr class="">
+                            <th scope="row">4</th>
+                            <td><strong>{{skills.path1.comp.comp4.name}}</strong></br>{{skills.path1.comp.comp4.desc}}</td>
+                            <td><strong>{{skills.path2.comp.comp4.name}}</strong></br>{{skills.path2.comp.comp4.desc}}</td>
+                            <td><strong>{{skills.path3.comp.comp4.name}}</strong></br>{{skills.path3.comp.comp4.desc}}</td>
+                        </tr>
+                        <tr class="">
+                            <th scope="row">5</th>
+                            <td><strong>{{skills.path1.comp.comp5.name}}</strong></br>{{skills.path1.comp.comp5.desc}}</td>
+                            <td><strong>{{skills.path2.comp.comp5.name}}</strong></br>{{skills.path2.comp.comp5.desc}}</td>
+                            <td><strong>{{skills.path3.comp.comp5.name}}</strong></br>{{skills.path3.comp.comp5.desc}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+        {% if skills.path4.name %}
+            <div class="table-responsive">
+                <table class="table table-light table-bordered">
+                    <thead>
+                        <tr class="text-center">
+                            <th scope="col"></th>
+                            <th scope="col" class="size-cell">Voie 4</th>
+                            <th scope="col" class="size-cell">Voie 5</th>
+                            <th scope="col" class="size-cell">Voie de prestige</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="text-center">
+                            <th scope="row">R</th>
+                            <td>{{skills.path4.name}}</td>
+                            <td>{{skills.path5.name}}</td>
+                            <td>{{skills.path6.name}}</td>
+                        </tr>
+                        <tr class="">
+                            <th scope="row">1</th>
+                            <td><strong>{{skills.path4.comp.comp1.name}}</strong></br>{{skills.path4.comp.comp1.desc}}</td>
+                            <td><strong>{{skills.path5.comp.comp1.name}}</strong></br>{{skills.path5.comp.comp1.desc}}</td>
+                            <td><strong>{{skills.path6.comp.comp1.name}}</strong></br>{{skills.path6.comp.comp1.desc}}</td>
+                        </tr>
+                        <tr class="">
+                            <th scope="row">2</th>
+                            <td><strong>{{skills.path4.comp.comp2.name}}</strong></br>{{skills.path4.comp.comp2.desc}}</td>
+                            <td><strong>{{skills.path5.comp.comp2.name}}</strong></br>{{skills.path5.comp.comp2.desc}}</td>
+                            <td><strong>{{skills.path6.comp.comp2.name}}</strong></br>{{skills.path6.comp.comp2.desc}}</td>
+                        </tr>
+                        <tr class="">
+                            <th scope="row">3</th>
+                            <td><strong>{{skills.path4.comp.comp3.name}}</strong></br>{{skills.path4.comp.comp3.desc}}</td>
+                            <td><strong>{{skills.path5.comp.comp3.name}}</strong></br>{{skills.path5.comp.comp3.desc}}</td>
+                            <td><strong>{{skills.path6.comp.comp3.name}}</strong></br>{{skills.path6.comp.comp3.desc}}</td>
+                        </tr>
+                        <tr class="">
+                            <th scope="row">4</th>
+                            <td><strong>{{skills.path4.comp.comp4.name}}</strong></br>{{skills.path4.comp.comp4.desc}}</td>
+                            <td><strong>{{skills.path5.comp.comp4.name}}</strong></br>{{skills.path5.comp.comp4.desc}}</td>
+                            <td><strong>{{skills.path6.comp.comp4.name}}</strong></br>{{skills.path6.comp.comp4.desc}}</td>
+                        </tr>
+                        <tr class="">
+                            <th scope="row">5</th>
+                            <td><strong>{{skills.path4.comp.comp5.name}}</strong></br>{{skills.path4.comp.comp5.desc}}</td>
+                            <td><strong>{{skills.path5.comp.comp5.name}}</strong></br>{{skills.path5.comp.comp5.desc}}</td>
+                            <td><strong>{{skills.path6.comp.comp5.name}}</strong></br>{{skills.path6.comp.comp5.desc}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

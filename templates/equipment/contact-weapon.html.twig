@@ -1,0 +1,287 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+{% include 'navbar.html.twig' %}
+<div class="container">
+    <h1> Armes aux contacts </h1>
+    <div class="table-responsive">
+        <table class="table table-light">
+            <thead>
+            <tr>
+                <th scope="col">Nom</th>
+                <th scope="col">Maniment</th>
+                <th scope="col">Dégâts</th>
+                <th scope="col">Critique</th>
+                <th scope="col">Prix</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="">
+                <td scope="row">Bâton</td>
+                <td>2 mains</td>
+                <td>1d4</td>
+                <td>20</td>
+                <td>0 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Gourdin</td>
+                <td>1 main</td>
+                <td>1d4</td>
+                <td>20</td>
+                <td>1 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Stylet *6</td>
+                <td>1 main</td>
+                <td>1d4</td>
+                <td>20</td>
+                <td>1 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Couteau *8</td>
+                <td>1 main</td>
+                <td>1d4</td>
+                <td>20</td>
+                <td>1 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Bâton ferré</td>
+                <td>2 mains</td>
+                <td>1d6</td>
+                <td>20</td>
+                <td>2 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Gourdin ferré</td>
+                <td>1 main</td>
+                <td>1d6</td>
+                <td>20</td>
+                <td>2 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Fouet</td>
+                <td>1 main</td>
+                <td>1d4 + Mod. de DEX</td>
+                <td>20</td>
+                <td>3 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Dague</td>
+                <td>1 main</td>
+                <td>1d4</td>
+                <td>20</td>
+                <td>3 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Epieu *1</td>
+                <td>2 mains</td>
+                <td>1d6</td>
+                <td>20</td>
+                <td>3 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Trident *1</td>
+                <td>2 mains</td>
+                <td>1d6</td>
+                <td>19</td>
+                <td>3 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Masse</td>
+                <td>1 main</td>
+                <td>1d6</td>
+                <td>20</td>
+                <td>4 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Faucille *9</td>
+                <td>1 main</td>
+                <td>1d6</td>
+                <td>20</td>
+                <td>4 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Lance longue *5</td>
+                <td>1main/2 mains</td>
+                <td>1d6/1d8</td>
+                <td>20</td>
+                <td>4 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Faux</td>
+                <td>2 mains</td>
+                <td>1d10</td>
+                <td>20</td>
+                <td>5 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Main gauche *4</td>
+                <td>1 main</td>
+                <td>1d4</td>
+                <td>20</td>
+                <td>5 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Pique *5,11</td>
+                <td>2 mains</td>
+                <td>1d8</td>
+                <td>20</td>
+                <td>5 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Epée courte</td>
+                <td>1 main</td>
+                <td>1d6</td>
+                <td>20</td>
+                <td>5 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Pioche</td>
+                <td>2 mains</td>
+                <td>1d8</td>
+                <td>20</td>
+                <td>5 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Epée longue</td>
+                <td>1 main</td>
+                <td>1d8</td>
+                <td>20</td>
+                <td>6 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Hache</td>
+                <td>1 main</td>
+                <td>1d8</td>
+                <td>20</td>
+                <td>6 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Rapière</td>
+                <td>1 main</td>
+                <td>1d6</td>
+                <td>19</td>
+                <td>6 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Cimeterre/Sabre de cavalerie/Kepesh *7</td>
+                <td>1 main</td>
+                <td>1d6</td>
+                <td>19</td>
+                <td>6 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Fléau *2</td>
+                <td>1 main</td>
+                <td>1d6</td>
+                <td>20</td>
+                <td>7 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Marteau de guerre</td>
+                <td>2 mains + 13 FOR</td>
+                <td>1d8</td>
+                <td>20</td>
+                <td>7 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Grand cimeterre</td>
+                <td>1 main</td>
+                <td>1d8</td>
+                <td>20</td>
+                <td>8 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Epée bâtarde</td>
+                <td>1 main/2 mains</td>
+                <td>1d8/1d12</td>
+                <td>20</td>
+                <td>9 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Epée à deux mains</td>
+                <td>2 mains</td>
+                <td>2d6</td>
+                <td>20</td>
+                <td>10 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Hache à deux mains</td>
+                <td>2 mains</td>
+                <td>2d6</td>
+                <td>20</td>
+                <td>10 pa</td>
+            </tr>
+             <tr class="">
+                <td scope="row">Masse, marteau à deux mains</td>
+                <td>2 mains</td>
+                <td>1d10</td>
+                <td>20</td>
+                <td>10 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Fléau à deux mains *2</td>
+                <td>2 mains</td>
+                <td>1d10</td>
+                <td>20</td>
+                <td>11 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Lance de cavalerie *3</td>
+                <td>2 mains</td>
+                <td>2d6</td>
+                <td>20</td>
+                <td>12 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Vivelame</td>
+                <td>2 mains</td>
+                <td>1d10</td>
+                <td>19</td>
+                <td>12 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Hallebarde *10</td>
+                <td>2 mains</td>
+                <td>1d10</td>
+                <td>20</td>
+                <td>12 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Claymore</td>
+                <td>2 mains + 15 FO</td>
+                <td>2d6+2</td>
+                <td>20</td>
+                <td>15 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Dragon Slayer</td>
+                <td>2 mains + 18 FO</td>
+                <td>2d8+2</td>
+                <td>20</td>
+                <td>100 pa</td>
+            </tr>
+            </tbody>
+        </table>
+        <p style="font-style: italic;">
+            <strong> *1 </strong> : Elle offre un bonus de +2 en DEF contre les créatures seulement dotées d’armes naturelles 
+            et inflige 2d6 DM contre celles qui ne portent pas d’armure manufacturée.<br>
+            <strong> *2 </strong> : Le fléau offre un bonus de +2 en attaque si l’adversaire utilise un bouclier.<br>
+            <strong> *3 </strong> : L’attaque doit donc avoir lieu après un déplacement pour obtenir les DM indiqués. 
+            Sinon, en combat au contact classique, le cavalier se voit infligé une pénalité de -3 en attaque et aux DM.<br>
+            <strong> *4 </strong> : Elle offre un bonus de +1 en DEF, 
+            mais seulement en combat au contact contre les adversaires maniant des armes dont la taille 
+            et le poids n’excèdent pas une épée longue (ce qui exclu les masses et les marteaux).<br>
+            <strong> *5 </strong> : Double ses DM contre une créature de grande taille 
+            qui vient de réaliser une charge ou une action de mouvement pour arriver au contact.<br>
+            <strong> *6 </strong> : En cas d’attaque sournoise ou par surprise, le stylet inflige [1d6+Mod. de DEX] DM.<br>
+            <strong> *7 </strong> : Considérée comme une Rapière.<br>
+            <strong> *8 </strong> : Offre un bonus de discrétion de +2 afin de la dissimuler sur soi.<br>
+            <strong> *9 </strong> : Utilisable par les druides.<br>
+            <strong> *10 </strong> : Inflige +1d6 DM contre une créature de grande taille 
+            qui vient de réaliser une charge ou une action de mouvement pour arriver au contact.<br>
+            <strong> *11 </strong> : Elle permet aussi d’attaquer en se tenant derrière un allié de taille normale, 
+            avec une pénalité de -5. Elle inflige également une pénalité de -5 en attaque dans toutes les autres conditions.<br>
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,305 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+{% include 'navbar.html.twig' %}
+<div class="container"> 
+    <h1>Générateur de rencontre</h1>
+    <div class="col-md-5">
+        {{ form_start(form, {'attr': {'id': 'entity-search-form', 'class': 'd-flex'}}) }}
+
+        {{ form_widget(form.search) }}
+        {{ form_widget(form.entity_id) }}
+        
+        {{ form_rest(form) }}
+            <button type="submit" class="btn btn-primary ms-2">Ajouter</button>
+        {{ form_end(form) }}
+    </div>
+</div>
+<div class="container">
+    <div class="row mt-4">
+        {% for entity in entities %}
+        <div class="col-4 mb-4">
+          <div class="{{'card entity' ~ (loop.index - 1) }}">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                {% if entity|class_name == "Player" %}
+                    <span class="material-symbols-outlined mb-1">person</span>
+                {% else %}
+                    <span class="material-symbols-outlined mb-1">pets</span>
+                {% endif %}
+                <h3 class="card-title"> {{ entity.name }} </h3>
+                <div class="dropdown open">
+                  <button class="btn btn-sm btn-secondary dropdown-toggle ms-2" type="button" id="triggerId" data-bs-toggle="dropdown" aria-haspopup="true"
+                      aria-expanded="false"></button>
+                  <div class="dropdown-menu" aria-labelledby="triggerId">
+                    <a class="dropdown-item d-flex" title="d12 pour tous les tests au lieu du d20"
+                    href="{{ path('set_detrimental_state', {'num': (loop.index - 1), 'state': 'weakened'}) }}">
+                        <img src="{{ asset('svg/weakened.svg') }}" alt="weakened" width="20" height="20">
+                        <span>Affaibli</span>
+                    </a>
+                    <a class="dropdown-item d-flex" title="Init. -5, Att. contact -5, DEF -5, Att. dist. -10"
+                    href="{{ path('set_detrimental_state', {'num': (loop.index - 1), 'state': 'blind'}) }}">
+                        <img src="{{ asset('svg/blind.svg') }}" alt="blind" width="20" height="20">
+                        <span>Aveuglé</span>
+                    </a>
+                    <a class="dropdown-item d-flex" title="Aucune action possible, DEF -5"
+                    href="{{ path('set_detrimental_state', {'num': (loop.index - 1), 'state': 'stun'}) }}">
+                        <img src="{{ asset('svg/stun.svg') }}" alt="stun" width="20" height="20">
+                        <span>Étourdi</span>
+                    </a>
+                    <a class="dropdown-item d-flex" title="d12 pour tous les tests au lieu du d20, pas de déplacement"
+                    href="{{ path('set_detrimental_state', {'num': (loop.index - 1), 'state': 'immobilized'}) }}">
+                        <img src="{{ asset('svg/immobilized.svg') }}" alt="immobilized" width="20" height="20">
+                        <span>Immobilisé</span>
+                    </a>
+                    <a class="dropdown-item d-flex" title="Aucune action possible, en cas d’attaque : touché automatiquement et subit un coup critique"
+                    href="{{ path('set_detrimental_state', {'num': (loop.index - 1), 'state': 'paralyzed'}) }}">
+                        <img src="{{ asset('svg/paralyzed.svg') }}" alt="paralyzed" width="20" height="20">
+                        <span>Paralysé</span>
+                    </a>
+                    <a class="dropdown-item d-flex" title="Une seule action par tour (action d’attaque ou de mouvement)"
+                    href="{{ path('set_detrimental_state', {'num': (loop.index - 1), 'state': 'slow'}) }}">
+                        <img src="{{ asset('svg/slow.svg') }}" alt="slow" width="20" height="20">
+                        <span>Ralenti</span>
+                    </a>
+                    <a class="dropdown-item d-flex" title="Att. -5, DEF -5, nécessite une action de mouvement pour se relever"
+                    href="{{ path('set_detrimental_state', {'num': (loop.index - 1), 'state': 'reversed'}) }}">
+                        <img src="{{ asset('svg/reversed.svg') }}" alt="reversed" width="20" height="20">
+                        <span>Renversé</span>
+                    </a>
+                    <a class="dropdown-item d-flex" title="Pas d’action, DEF -5 au 1er tour de combat"
+                    href="{{ path('set_detrimental_state', {'num': (loop.index - 1), 'state': 'surprised'}) }}">
+                        <img src="{{ asset('svg/surprised.svg') }}" alt="surprised" width="20" height="20">
+                        <span>Surpris</span>
+                    </a>
+                  </div>
+                </div>
+                {% for detrimental_state in entity.getDetrimentalStates %}
+                        <div class="detrimental-state ms-1">
+                            <img src="{{ asset('svg/' ~ detrimental_state.name ~ '.svg') }}" alt="{{ detrimental_state.name }}" width="20" height="20"
+                                title="{{ detrimental_state.description }}">
+                        </div>
+                {% endfor %}
+              </div>
+              <div class="d-flex">
+                <span class="material-symbols-outlined">security</span>
+                <p class="card-text me-3">Def : {{ entity.def }}</p>
+                <span class="material-symbols-outlined">sprint</span>
+                <p class="card-text me-3">Init : {{ entity.init }}</p>
+                {% if entity|class_name == "Player" %}
+                <span class="material-symbols-outlined">swords</span>
+                <p class="card-text me-3">: {{ entity.getAttCon }}</p>
+                <img src="{{ asset('svg/bow.svg') }}" alt="bow" width="20" height="20">
+                <p class="card-text me-3">: {{ entity.getAttDis }}</p>
+                <span class="material-symbols-outlined">menu_book</span>
+                <p class="card-text">: {{ entity.getAttMag }}</p>
+                {% else %}
+                <span class="material-symbols-outlined">shield_lock</span>
+                <p class="card-text">: {{ entity.rd }}/{{entity.getRdComment}}</p>
+                {% endif %}
+              </div>
+              <div class="d-flex d-flex justify-content-between">
+                  <button class="btn btn-danger btn-sm damage" data-entity-num="{{ loop.index - 1 }}">-</button>
+                  <div class="col-9 text-center border border-2 rounded health-bar">
+                      <p class="health">{{ entity.hp }}/{{ entity.getMaxHp }}</p>
+                  </div>
+                  <button class="btn btn-success btn-sm heal" data-entity-num="{{ loop.index - 1 }}">+</button>
+              </div>
+              <div>
+                {% if entity|class_name == "Player" %}
+                    {% set weapons = json_decode(entity.getWeapons, true) %}
+                    
+                    {% if weapons.weapon1.name != "" %}
+                    <p class="card-text mb-0">
+                        <strong>{{ weapons.weapon1.name }}</strong>
+                        +{{ weapons.weapon1.att }}
+                        <strong>Dm</strong>
+                        {{ weapons.weapon1.dm }}
+                        {{ weapons.weapon1.special|default('') }}
+                    </p>
+                    {% endif %}
+                    {% if weapons.weapon2.name != "" %}
+                    <p class="card-text mb-0">
+                        <strong>{{ weapons.weapon2.name }}</strong>
+                        +{{ weapons.weapon2.att }}
+                        <strong>Dm</strong>
+                        {{ weapons.weapon2.dm }}
+                        {{ weapons.weapon2.special|default('') }}
+                    </p>
+                    {% endif %}
+                    {% if weapons.weapon3.name != "" %}
+                    <p class="card-text mb-0">
+                        <strong>{{ weapons.weapon3.name }}</strong>
+                        +{{ weapons.weapon3.att }}
+                        <strong>Dm</strong>
+                        {{ weapons.weapon3.dm }}
+                        {{ weapons.weapon3.special|default('') }}
+                    </p>
+                    {% endif %}
+                {% else %}
+                    {% for attack in entity.attacks %}
+                        <p class="card-text mb-0">
+                            <strong>{{ attack.name }}</strong>
+                            +{{ attack.bonus }}
+                            <strong>Dm</strong>
+                            {{ attack.dm }}
+                        </p>
+                    {% endfor %}
+                {% endif %}
+                <div class="manage-hp mt-2">
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="d-grid gap-2 my-1">
+                <a class="btn btn-primary modif-hp" data-entity-num="{{ loop.index - 1 }}">Modifer les PV</a>
+                {% if entity|class_name == "Player" %}
+                    <a href="{{ path('playersheet', {'id': entity.id}) }}" class="btn btn-primary" target="_blank">Voir</a>
+                {% else %}
+                    <a href="{{ path('creaturesheet', {'id': entity.id}) }}" class="btn btn-primary" target="_blank">Voir</a>
+                {% endif %}
+              </div>
+              <div class="d-grid gap-2 my-1">
+                <a href={{ path('encountersgenerator_remove', {'name': entity.name}) }} class="btn btn-danger">Enlever</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div>
+    </div>
+</div>
+<style>
+    .health-bar {
+      background: green;
+    }
+</style>
+<script>
+    $(function() {
+        $("#entity_search_search").autocomplete({
+            source: "{{ path('entity_search_ajax') }}",
+            minLength: 2,
+            delay: 100,
+            select: function(event, ui) {
+                event.preventDefault();
+                $("#entity_search_search").val(ui.item.label);
+                $("#entity_search_entity_id").val(ui.item.id);
+            },
+        }).autocomplete("instance")._renderItem = function(ul, item) {
+            return $("<li>")
+                .append('<div>' + item.label + '</div>')
+                .appendTo(ul);
+        };
+    });
+    function updateHealthBar(health_bar, percent) {
+        let card = health_bar.parent().parent();
+        let damage = card.find('.damage');
+        if (percent <= 0) {
+            card.css("background", "lightgray");
+            health_bar.css("background", "lightgray");
+            damage.prop('disabled', true);
+        }
+        else if (percent <= 25) {
+            card.css("background", "white");
+            health_bar.css("background", "linear-gradient(90deg, red "+ percent + "%, white " + percent + "%)");
+            damage.prop('disabled', false);
+        } else if (percent <= 50) {
+            card.css("background", "white");
+            health_bar.css("background", "linear-gradient(90deg, orange "+ percent + "%, white " + percent + "%)");
+            damage.prop('disabled', false);
+        } else  {
+            card.css("background", "white");
+            health_bar.css("background", "linear-gradient(90deg, green "+ percent + "%, white " + percent + "%)");
+            damage.prop('disabled', false);
+        }
+    }
+
+    function manageHp(num, nb_hp, type){
+        let health = $(".entity"+num).find('.health');
+        let health_bar = $(".entity"+num).find('.health-bar');
+        let base_url = "";
+        if (type == "add") {
+            base_url = "{{ url('add_hp', {'num': 'tmp', 'nb' : 'pmt'}) }}";
+        } else {
+            base_url = "{{ url('subtract_hp', {'num': 'tmp', 'nb' : 'pmt'}) }}";
+        }
+        $.ajax({
+            type: "POST",
+            url: base_url.replace("tmp", num).replace("pmt", nb_hp),
+            success: function(data) {
+                // alert("HP soustrait avec succès ! " + data.hp);
+                health.text(data.hp + "/" + data.maxHp);
+                let percent = data.hp / data.maxHp * 100;
+                updateHealthBar(health_bar, percent);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Erreur lors de la soustraction d'HP : " + errorThrown);
+            }
+        });
+    }
+    $(document).ready(function() {
+        $(".manage-hp").hide();
+        var hpFormHtml = `
+            {{ form_start(hpForm) }}
+            {{ form_widget(hpForm.entity_hp) }}
+            {{ form_widget(hpForm.entity_num) }}
+            
+            {{ form_rest(hpForm) }}
+                <div class="d-grid gap-2 my-1">
+                    <button type="submit" class="btn btn-primary mt-2">Modifier</button>
+                </div>
+            {{ form_end(hpForm) }}
+        `;
+        $(".manage-hp").html(hpFormHtml);
+
+        $(".modif-hp").click(function() {
+            let num = $(this).data("entity-num");
+            const entity_num = document.querySelectorAll(".entity-num")[num];
+            const entity_hp = document.querySelectorAll(".entity-hp")[num];
+            entity_num.value = num;
+            entity_hp.value = $(".entity"+num).find(".health").text().split("/")[0];
+            $(".entity"+num).find(".manage-hp").toggle();
+        });
+
+        $(".damage").each(function() {
+            let num = $(this).data("entity-num");
+            let health = $(".entity"+num).find('.health');
+            let health_bar = $(".entity"+num).find('.health-bar');
+            let percent = health.text().split("/")[0] / health.text().split("/")[1] * 100;
+            updateHealthBar(health_bar, percent);
+        });
+
+        $(".damage").click(function() {
+            let num = $(this).data("entity-num");
+            manageHp(num, 1, "subtract");
+        });
+        $(".heal").click(function() {
+            let num = $(this).data("entity-num");
+            manageHp(num, 1, "add");
+        });
+    });
+</script>
+{% endblock %}
+{# let nb_clicks = 0;
+        let interval = null;
+        $(".damage").mousedown(function()
+        {
+            let num = $(this).data("entity-num");
+            let health = $(".entity"+num).find('.health');
+            interval = setInterval(function() {
+                nb_clicks++;
+                health.text((health.text().split("/")[0] - 1 )+ "/" + health.text().split("/")[1]);
+            }, 200)
+        });
+        $(".damage").mouseup(function()
+        {
+            clearInterval(interval);
+            manageHp(num, nb_clicks, "subtract");
+            console.log(nb_clicks);
+        });
+        $(".damage").mouseleave(function()
+        {
+            clearInterval(interval);
+            manageHp(num, nb_clicks, "subtract");
+            console.log(nb_clicks);
+        }); #}

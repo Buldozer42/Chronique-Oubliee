@@ -1,0 +1,362 @@
+{% extends 'base.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/framework/js/prototype.min.js') }}"></script>
+    <script src="{{ asset('bundles/framework/js/collection.min.js') }}"></script>
+{% endblock %}
+{% block body %}
+{% include 'navbar.html.twig' %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 align-center">
+            <h1>Créer une créature</h1>
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="flash-{{ label }}">
+                        {% if label == 'success' %}
+                            <div class="alert alert-success" role="alert">
+                        {% elseif label == 'error' %}
+                            <div class="alert alert-danger" role="alert">
+                        {% elseif label == 'info' %}
+                            <div class="alert alert-primary" role="alert">
+                        {% else %}
+                            <div class="alert alert-light" role="alert">
+                        {% endif %}
+                        {{ message }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+            {{ form_start(form) }}
+            <h3> Général</h3>
+            <div class="ms-2 mb-4">
+                <div class="form-group">
+                    {{ form_label(form.name) }}
+                    {{ form_widget(form.name) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.family) }}
+                    {{ form_widget(form.family) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.type) }}
+                    {{ form_widget(form.type) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.size) }}
+                    {{ form_widget(form.size) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.natural_environment) }}
+                    {{ form_widget(form.natural_environment) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.archetype) }}
+                    {{ form_widget(form.archetype) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.boss_rank) }}
+                    {{ form_widget(form.boss_rank) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.boss_type) }}
+                    {{ form_widget(form.boss_type) }}
+                </div>
+            </div>
+            <h3>Statistiques</h3>
+            <div class="ms-2 mb-4">
+                <div class="form-group">
+                    {{ form_label(form.nc) }}
+                    {{ form_widget(form.nc) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.max_hp) }}
+                    {{ form_widget(form.max_hp) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.def) }}
+                    {{ form_widget(form.def) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.init) }}
+                    {{ form_widget(form.init) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.fo) }}
+                    {{ form_widget(form.fo) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.dex) }}
+                    {{ form_widget(form.dex) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.con) }}
+                    {{ form_widget(form.con) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.int) }}
+                    {{ form_widget(form.int) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.sag) }}
+                    {{ form_widget(form.sag) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.cha) }}
+                    {{ form_widget(form.cha) }}
+                </div>
+                <div class="my-3">
+                    <div class="d-flex my-2">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_label(form.advantage_fo) }}
+                                {{ form_widget(form.advantage_fo) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(form.advantage_dex) }}
+                                {{ form_widget(form.advantage_dex) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(form.advantage_con) }}
+                                {{ form_widget(form.advantage_con) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_label(form.advantage_int) }}
+                                {{ form_widget(form.advantage_int) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(form.advantage_sag) }}
+                                {{ form_widget(form.advantage_sag) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(form.advantage_cha) }}
+                                {{ form_widget(form.advantage_cha) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                   {{ form_label(form.rd) }}
+                   {{ form_widget(form.rd) }}
+                </div>
+                <div class="form-group">
+                   {{ form_label(form.rd_comment) }}
+                   {{ form_widget(form.rd_comment) }}
+                </div>
+            </div>
+            <h3>Description et Histoire</h3>
+            <div class="ms-2 mb-4">
+                <div class="form-group">
+                   {{ form_label(form.description) }}
+                   {{ form_widget(form.description) }}
+                </div>
+                <div class="form-group">
+                   {{ form_label(form.story) }}
+                   {{ form_widget(form.story) }}
+                </div>
+            </div>
+            <h3>Attaques</h3>
+            <div class="ms-2 mb-4">
+                <div class="form-group">
+                    <ul class="attacks list-group"
+                        data-index="{{ form.attacks|length > 0 ? form.attacks|last.vars.name + 1 : 0 }}"
+                        data-prototype="{{ form_widget(form.attacks.vars.prototype)|e('html_attr') }}"
+                    >
+                        {% for attack in form.attacks %}
+                            <li class="list-group-item">{{ form_widget(attack.name) }}</li>
+                        {% endfor %}
+                    </ul>
+                    <button type="button" class=" btn btn-primary add_item_link my-2" data-collection-holder-class="attacks">Ajouter une attaque</button>
+                </div>
+            </div>
+
+            <h3>Cappacités</h3>
+            <div class="ms-2 mb-4">
+                {% for i in range(1, 6) %}
+                    <div class="form-check mt-4">
+                        <input class="{{'form-check-input path' ~ i ~ 'checkboxdisabled'}}" type="checkbox" value="" 
+                            id={{ 'path' ~ i ~'checkbox' }}>
+                        <label class="form-check-label" for="">
+                            Voie non aquise
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(attribute(form, 'path' ~ i ~ '_name')) }}
+                        {{ form_widget(attribute(form, 'path' ~ i ~ '_name')) }}
+                    </div>
+                    {% for y in range(1, 5) %}
+                        <div class="form-check mt-2">
+                            <input class="{{'form-check-input path' ~ i ~ 'checkboxdisabled'}}" type="checkbox" value="" 
+                                id={{ 'path' ~ i ~'comp' ~ y ~ 'checkbox' }}>
+                            <label class="form-check-label" for="">
+                                Cappacité non aquise
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(attribute(form, 'path' ~ i ~ '_comp' ~ y ~ '_name')) }}
+                            {{ form_widget(attribute(form, 'path' ~ i ~ '_comp' ~ y ~ '_name')) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(attribute(form, 'path' ~ i ~ '_comp' ~ y ~ '_desc')) }}
+                            {{ form_widget(attribute(form, 'path' ~ i ~ '_comp' ~ y ~ '_desc')) }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+                <div class="form-group">
+                    <label class="from-label required" for="special_skills">Cappacités spéciales</label>
+                    <ul class="special_skills list-group"
+                        data-index="{{ form.special_skills|length > 0 ? form.special_skills|last.vars.name + 1 : 0 }}"
+                        data-prototype="{{ form_widget(form.special_skills.vars.prototype)|e('html_attr') }}"
+                    >
+                        {% for special_skill in form.special_skills %}
+                            <li class="list-group-item">{{ form_widget(special_skill.name) }}</li>
+                        {% endfor %}
+                    </ul>
+                    <button type="button" class=" btn btn-primary add_item_link my-2" data-collection-holder-class="special_skills">Ajouter une cappacité</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                {{ form_widget(form.hp) }}
+            </div>
+            <div class="form-group">
+                {{ form_widget(form.detrimental_states) }}
+            </div>
+            {{ form_rest(form) }}
+            <input type="submit" class="btn btn-primary my-2"/>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+<script>
+    const addFormDeleteLink = (item) => {
+        const removeFormButton = document.createElement('button');
+        removeFormButton.innerText = 'X';
+        removeFormButton.classList.add('btn', 'btn-danger', 'mb-1', 'mt-2');
+
+        const buttonDiv = document.createElement('div');
+        buttonDiv.classList.add('d-grid', 'gap-2', 'col-md-4');
+        buttonDiv.append(removeFormButton);
+
+        item.append(buttonDiv);
+
+        removeFormButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            item.remove();
+        });
+    };
+
+    const addFormToCollection = (e) => {
+        const collectionHolder = document.querySelector('.' + e.currentTarget.dataset.collectionHolderClass);
+        const div = document.createElement('div');
+        const item = document.createElement('li');
+        item.innerHTML = collectionHolder
+        .dataset
+        .prototype
+        .replace(
+            /__name__/g,
+            collectionHolder.dataset.index
+        );
+        div.append(item);
+        collectionHolder.appendChild(div);
+        collectionHolder.dataset.index++;
+        // add a delete link to the new form
+        addFormDeleteLink(div);
+    };
+    document
+    .querySelectorAll('ul.attacks li')
+    .forEach((attack) => {
+        addFormDeleteLink(attack)
+    });
+    document
+    .querySelectorAll('ul.special_skills li')
+    .forEach((special_skill) => {
+        addFormDeleteLink(special_skill)
+    });
+    document
+    .querySelectorAll('.add_item_link')
+    .forEach(btn => {
+        btn.addEventListener("click", addFormToCollection)
+    });
+
+    for (let i = 1; i <=6 ; i++) {
+        const pathcheckbox = document.querySelector('#path' + i + 'checkbox');
+        pathcheckbox.addEventListener('change', function() {
+            const isChecked = this.checked;
+            if (isChecked) {
+                for (let x = i; x <= 6; x++){
+                    const pathdisabled = document.querySelectorAll('.path' + x + 'disabled');
+                    pathdisabled.forEach(function(value, index) {
+                        value.value = 'Pas acquise';
+                        value.disabled = true;
+                    });
+                    const pathcheckboxdisabled = document.querySelectorAll('.path' + x + 'checkboxdisabled');
+                    pathcheckboxdisabled.forEach(function(value, index) {
+                        value.checked = true;
+                    });
+                }
+            } else {
+                for (let x = i; x >= 1; x--){
+                    const pathdisabled = document.querySelectorAll('.path' + x + 'disabled');
+                    pathdisabled.forEach(function(value, index) {
+                        value.value = '';
+                        value.disabled = false;
+                    });
+                    const pathcheckboxdisabled = document.querySelectorAll('.path' + x + 'checkboxdisabled');
+                    pathcheckboxdisabled.forEach(function(value, index) {
+                        value.checked = false;
+                    });
+                }
+            }
+        });
+        for (let y = 1; y <= 5; y++){
+            const pathcompcheckbox = document.querySelector('#path' + i + 'comp' + y + 'checkbox');
+            pathcompcheckbox.addEventListener('change', function() {
+                const isChecked = this.checked;
+                if (isChecked) {
+                    for ( let x = y; x <= 5; x++ ){
+                        const pathcompname = document.querySelector('.path' + i + '_comp' + x +'_name');
+                        const pathcompdesc = document.querySelector('.path' + i + '_comp' + x +'_desc');
+                        const pathcompcheckbox = document.querySelector('#path' + i + 'comp' + x + 'checkbox');
+
+                        pathcompname.value = 'Pas acquise';
+                        pathcompname.disabled = true;
+
+                        pathcompdesc.value = 'Pas acquise';
+                        pathcompdesc.disabled = true;
+
+                        pathcompcheckbox.checked = true;
+
+                    }
+                } else {
+                    const pathname = document.querySelector('.path' + i + '_name');
+                    pathname.value = '';
+                    pathname.disabled = false;
+
+                    const pathcheckbox = document.querySelector('#path' + i + 'checkbox');
+                    pathcheckbox.checked = false;
+
+                    for ( let x = y; x >= 1; x-- ){
+                        const pathcompname = document.querySelector('.path' + i + '_comp' + x +'_name');
+                        const pathcompdesc = document.querySelector('.path' + i + '_comp' + x +'_desc');
+                        const pathcompcheckbox = document.querySelector('#path' + i + 'comp' + x + 'checkbox');
+
+                        pathcompname.value = '';
+                        pathcompname.disabled = false;
+
+                        pathcompdesc.value = '';
+                        pathcompdesc.disabled = false;
+
+                        pathcompcheckbox.checked = false;
+
+                    }
+                }
+            });
+        }
+    }
+</script>
+{% endblock %}

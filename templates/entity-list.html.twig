@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+{% include 'navbar.html.twig' %}
+{% set url = app.request.pathInfo %}
+
+<div class="mx-4">
+  <h1>{{ title }}</h1>
+  <div class="d-flex p-2">
+    <div class="d-flex">
+      {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
+      {{ form_widget(form.search) }}
+      {{ form_widget(form.entity_id) }}
+          
+      {{ form_rest(form) }}
+        <button type="submit" class="btn btn-primary ms-2">Rechercher</button>
+      {{ form_end(form) }}
+      {% if path == 'creature' %}
+        <div class="dropdown open ms-2">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-bs-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false">
+                {{ familyName == "" ? "Famille de créature" : familyName }}
+              </button>
+          <div class="dropdown-menu" aria-labelledby="triggerId">
+            <a href="{{ path('creaturelist') }}" class="dropdown-item">Toutes</a>
+            {% for family in families %}
+              {% for name in family %}
+                <a href="{{ path('creature_list_by_family', {family: name}) }}" class="dropdown-item">{{ name }}</a>
+              {% endfor %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+      </div>
+  </div>
+  {% for label, messages in app.flashes %}
+    {% for message in messages %}
+      <div class="flash-{{ label }}">
+      {% if label == 'success' %}
+        <div class="alert alert-success" role="alert">
+      {% elseif label == 'error' %}
+        <div class="alert alert-danger" role="alert">
+      {% elseif label == 'info' %}
+        <div class="alert alert-primary" role="alert">
+      {% else %}
+        <div class="alert alert-light" role="alert">
+      {% endif %}
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endfor %}
+  <div class="table-responsive ">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          {% if path == 'creature' %}
+            <th scope="col">
+              <div class="d-flex">
+                Nc
+                <div class="d-flex">
+                  {% if familyName is defined and familyName != "" %}
+                    <a href="{{ path(path ~ 'listoredered', {by: 'nc', asc:'0', family:familyName}) }}">
+                      <span class="material-symbols-outlined">arrow_drop_up</span>
+                    </a>
+                    <a href="{{ path(path ~ 'listoredered', {by: 'nc', asc:'1', family:familyName}) }}">
+                      <span class="material-symbols-outlined">arrow_drop_down</span>
+                    </a>
+                  {% else %}
+                    <a href="{{ path(path ~ 'listoredered', {by: 'nc', asc:'0', family:'null'}) }}">
+                      <span class="material-symbols-outlined">arrow_drop_up</span>
+                    </a>
+                    <a href="{{ path(path ~ 'listoredered', {by: 'nc', asc:'1', family:'null'}) }}">
+                      <span class="material-symbols-outlined">arrow_drop_down</span>
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            </th>
+          {% endif %}
+          <th scope="col">
+            <div class="d-flex">
+              Name
+              <div class="d-flex">
+                {% if familyName is defined and familyName != "" %}
+                    <a href="{{ path(path ~ 'listoredered', {by: 'name', asc:'0', family:familyName}) }}">
+                      <span class="material-symbols-outlined">arrow_drop_up</span>
+                    </a>
+                    <a href="{{ path(path ~ 'listoredered', {by: 'name', asc:'1', family:familyName}) }}">
+                      <span class="material-symbols-outlined">arrow_drop_down</span>
+                    </a>
+                  {% else %}
+                    <a href="{{ path(path ~ 'listoredered', {by: 'name', asc:'0', family:'null'}) }}">
+                      <span class="material-symbols-outlined">arrow_drop_up</span>
+                    </a>
+                    <a href="{{ path(path ~ 'listoredered', {by: 'name', asc:'1', family:'null'}) }}">
+                      <span class="material-symbols-outlined">arrow_drop_down</span>
+                    </a>
+                  {% endif %}
+              </div>
+            </div>
+          </th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entity in entitys %}
+        <tr>
+          {% if path == 'creature' %}
+            <td>{{ entity.nc }}</td>
+          {% endif %}
+          <td>
+            <a href="{{ path(path ~ 'sheet', {id: entity.id}) }}" class="link-dark"> {{ entity.name }}</a>
+          </td>
+          <td>
+            <a href="{{ path(path ~ 'edit', {id: entity.id}) }}"> <button class="btn btn-primary">Edit</button></a>
+            <a href="{{ path(path ~ 'remove', {id: entity.id}) }}"><button class="btn btn-danger">Delete</button></a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

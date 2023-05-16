@@ -1,0 +1,10 @@
+{% if entitys|length > 0 %}
+    <h2>Résultats de la recherche</h2>
+        <ul>
+        {% for entity in entitys %}
+            <li>{{ entity.name }} </li>
+        {% endfor %}
+        </ul>
+{% else %}
+    <p>Aucun personnage ou créature trouvé</p>
+{% endif %}

@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+{% include 'navbar.html.twig' %}
+<div class="container">
+    <h1> Armures </h1>
+    <div class="table-responsive">
+        <table class="table table-light">
+            <thead>
+            <tr>
+                <th scope="col">Nom</th>
+                <th scope="col">Defence</th>
+                <th scope="col">Prix</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="">
+                <td scope="row">Tissu matelassé</td>
+                <td>1</td>
+                <td>2 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Petit bouclier</td>
+                <td>1</td>
+                <td>2 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Bocle *4</td>
+                <td>1</td>
+                <td>2 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Plastron de cuir</td>
+                <td>1</td>
+                <td>3 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Armure de cuir</td>
+                <td>2</td>
+                <td>4 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Grand bouclier</td>
+                <td>2</td>
+                <td>4 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Armure de cuir renforcé</td>
+                <td>3</td>
+                <td>8 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Chemise de maille</td>
+                <td>4</td>
+                <td>15 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Cotte de maille</td>
+                <td>5</td>
+                <td>20 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Demi-plaque</td>
+                <td>6</td>
+                <td>50 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Plates et mailles *1,2</td>
+                <td>7</td>
+                <td>90 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Plaque complète *1</td>
+                <td>7</td>
+                <td>200 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Armure de joute *1,3</td>
+                <td>10</td>
+                <td>500 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Grand harnois *1</td>
+                <td>9</td>
+                <td>2000 pa</td>
+            </tr>
+            </tbody>
+        </table>
+        <p style="font-style: italic;">
+            <strong> *1 </strong> : Fabriquée sur mesure, Seul le chevalier peut porter cette armure<br>
+            <strong> *2 </strong> : Composé d'une cotte de mailles et de pièces d'armure
+            fixées par dessus sur des sangles ou des armatures de cuir.<br>
+            <strong> *3 </strong> : Une seule action par tour(même limité). 
+            Test de FOR difficulté 15 pour se relever. 
+            RD 10 contre les coups critiques. 
+            Difficulté de tous ses tests de perception (SAG) se trouve augmentée de 10.<br>
+            <strong> *4 </strong> :  +1 en DEF, mais seulement en combat au contact. 
+            Peut être utilisé par un barde qui a acquis au moins un rang dans la voie de l'escrime.
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+{% include 'navbar.html.twig' %}
+<div class="container">
+    <h1> Armes a distances </h1>
+    <div class="table-responsive">
+        <table class="table table-light">
+            <thead>
+            <tr>
+                <th scope="col">Nom</th>
+                <th scope="col">Maniment</th>
+                <th scope="col">Portée</th>
+                <th scope="col">Rechargement</th>
+                <th scope="col">Dégâts</th>
+                <th scope="col">Critique</th>
+                <th scope="col">Prix</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="">
+                <td scope="row">Fronde</td>
+                <td>1 main</td>
+                <td>20 m</td>
+                <td>Pas d'action</td>
+                <td>1d4</td>
+                <td>20</td>
+                <td>0 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Hachette</td>
+                <td>1 main</td>
+                <td>5 m</td>
+                <td>Pas d'action</td>
+                <td>1d6</td>
+                <td>20</td>
+                <td>2 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Couteau de lancer *1</td>
+                <td>1 main</td>
+                <td>1o m</td>
+                <td>Pas d'action</td>
+                <td>1d4</td>
+                <td>20</td>
+                <td>3 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Dague</td>
+                <td>1 main</td>
+                <td>5 m</td>
+                <td>Pas d'action</td>
+                <td>1d4</td>
+                <td>20</td>
+                <td>3 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Arc court</td>
+                <td>2 mains</td>
+                <td>3o m</td>
+                <td>Pas d'action</td>
+                <td>1d6</td>
+                <td>20</td>
+                <td>4 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Arc long</td>
+                <td>2 mains + 13 FO</td>
+                <td>5o m</td>
+                <td>Pas d'action</td>
+                <td>1d8</td>
+                <td>20</td>
+                <td>5 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Javelot</td>
+                <td>1 main</td>
+                <td>20 m</td>
+                <td>Pas d'action</td>
+                <td>1d6</td>
+                <td>20</td>
+                <td>6 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Arbalète de poing</td>
+                <td>1 main</td>
+                <td>1o m</td>
+                <td>Action simple</td>
+                <td>1d6</td>
+                <td>20</td>
+                <td>8 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Arbalète légère</td>
+                <td>2 mains</td>
+                <td>3o m</td>
+                <td>Action simple</td>
+                <td>2d4</td>
+                <td>20</td>
+                <td>10 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Arbalète lourde</td>
+                <td>2 mains</td>
+                <td>6o m</td>
+                <td>Action limité</td>
+                <td>3d4</td>
+                <td>20</td>
+                <td>12 pa</td>
+            </tr>
+            <tr class="">
+                <td scope="row">Arbalète à répétition *2</td>
+                <td>2 mains</td>
+                <td>3o m</td>
+                <td>Action limité</td>
+                <td>2d4</td>
+                <td>20</td>
+                <td>12 pa</td>
+            </tr>
+            </tbody>
+        </table>
+        <p style="font-style: italic;">
+            <strong> *1 </strong> : Seuls les bardes, les voleurs et les moines sont formés à leur maniement. 
+            Au prix d’une action limitée, un personnage peut au choix lancer plusieurs couteaux et infliger 2d4 DM, 
+            ou en lancer un seul avec précision et ajouter son Mod. de DEX aux DM. 
+            Ces armes ne sont pas utilisables en combat au contact.<br>
+            <strong> *2 </strong> : Recharger permet de tirer 2 fois.
+        </p>
+    </div>
+</div>
+{% endblock %}

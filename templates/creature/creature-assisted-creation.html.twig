@@ -1,0 +1,915 @@
+{% extends 'base.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/framework/js/prototype.min.js') }}"></script>
+    <script src="{{ asset('bundles/framework/js/collection.min.js') }}"></script>
+{% endblock %}
+{% block body %}
+{% include 'navbar.html.twig' %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 align-center">
+            <h1>Aide à la création de créature</h1>
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="flash-{{ label }}">
+                        {% if label == 'success' %}
+                            <div class="alert alert-success" role="alert">
+                        {% elseif label == 'error' %}
+                            <div class="alert alert-danger" role="alert">
+                        {% elseif label == 'info' %}
+                            <div class="alert alert-primary" role="alert">
+                        {% else %}
+                            <div class="alert alert-light" role="alert">
+                        {% endif %}
+                        {{ message }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            <p> 
+                Tu es mauvais et tu ne sais pas créer une créature équilibrer ? Pas de soucis, on va t'aider !
+                Tu as juste à suivre les étapes et utiliser cette chose très puissante : ta tête !
+            </p>
+        </div>
+        {{ form_start(form) }}
+        <h3>Catégorie</h3>
+        <div class="ms-2 mb-4">
+            <p>
+                Il y a 4 catégories de créature (vivante, humanoïde, végétative et non-vivante).
+            </p>
+            <ul>
+                <li>
+                    <strong>Créature vivante</strong> : 
+                    La catégorie par défaut. Elle comprend les animaux, les créatures magiques, les dragons, les insectes, 
+                    même géants et autres aberrations. 
+                    Ce type de créature est immunisé aux pouvoirs qui n’affectent que les humanoïdes. 
+                    La plupart de ces créatures voient dans le noir et beaucoup ne parlent pas.
+                </li>
+                <li>
+                    <strong>Humanoïde</strong> : 
+                    Elle comprend les humanoïdes monstrueux, les géants, les êtres féériques, de nombreux démons. 
+                    Cette catégorie se distingue de celle des créatures vivantes 
+                    du fait que de nombreuses capacités peuvent seulement cibler des créatures humanoïdes. 
+                    Les humanoïdes sont proches des peuples jouables : ils marchent sur deux jambes et sont généralement doués de parole, 
+                    ce qui permet des interactions plus complètes qu’un simple combat.
+                </li>
+                <li>
+                    <strong>Créature végétative</strong> : 
+                    Comprend les plantes et les vases (des sortes de liquides vivants). 
+                    Ces créatures ne respirent pas et sont immunisées aux maladies et aux poisons. 
+                    Elles sont immunisées à toutes les attaques mentales et entre autre tout pouvoir qui peut être résisté par un test 
+                    d’INT, de CHA ou de SAG.
+                </li>
+                <li>
+                    <strong>Créature non-vivante</strong> : 
+                    Comprend les créatures artificielles (golem, robot), les élémentaires et les mort-vivants. 
+                    Ces créatures ne respirent pas et sont immunisées aux maladies et aux poisons, 
+                    à toutes les attaques qui demandent un test de CON et sont infatigables. 
+                    Celles qui sont dépourvues d’intelligence possèdent les mêmes immunités que les créatures végétatives (INT, SAG, CHA). 
+                    Elles voient dans le noir.
+                </li>
+            </ul>
+            <div class="form-group">
+                {{ form_label(form.type) }}
+                {{ form_widget(form.type) }}
+            </div>
+        </div>
+        <h3>Taile</h3>
+        <div class="ms-2 mb-4">
+            <p>
+                Le choix de la taille vous permet de déterminer une base de départ pour la plupart des Carac. 
+                importantes d’une créature et son NC (niveau de créature) de base.
+                La taille est un paramètre important, elle permet d’avoir une bonne idée de la puissance de la créature 
+                et des choses qu’elle peut faire. 
+                De nombreuses capacités des personnages ou des créatures s’appliquent à certaines catégories de taille et pas à d’autres.
+                </br>Voici la liste des tailles possibles :
+            </p>
+            <div class="table-responsive">
+                <table class="table table-light">
+                    <thead>
+                    <tr>
+                        <th scope="col">Taille</th>
+                        <th scope="col">Exemple</th>
+                        <th scope="col">Hauteur max.</th>
+                        <th scope="col">Poids max.</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="">
+                        <td scope="row">Minuscule</td>
+                        <td>Souris, fée</td>
+                        <td>10 cm</td>
+                        <td>0,5 kg</td>
+                    </tr>
+                    <tr class="">
+                        <td scope="row">Très petite</td>
+                        <td>Chat, aigle, lutin</td>
+                        <td>50 cm</td>
+                        <td>5 kg</td>
+                    </tr>
+                    <tr class="">
+                        <td scope="row">Petite</td>
+                        <td>Gobelin, kobold, chien</td>
+                        <td>1 m</td>
+                        <td>50 kg</td>
+                    </tr>
+                    <tr class="">
+                        <td scope="row">Moyenne</td>
+                        <td>Humain, orque, loup, léopard</td>
+                        <td>2 m</td>
+                        <td>200 kg</td>
+                    </tr>
+                    <tr class="">
+                        <td scope="row">Grande</td>
+                        <td>Ogre, ours, troll, tigre, taureau</td>
+                        <td>3 m</td>
+                        <td>2 t</td>
+                    </tr>
+                    <tr class="">
+                        <td scope="row">Énorme</td>
+                        <td>Géant, éléphant, dragon, tyrannosaure</td>
+                        <td>6 m</td>
+                        <td>10 t</td>
+                    </tr>
+                    <tr class="">
+                        <td scope="row">Colossale</td>
+                        <td>Dragon ancien, titan, diplodocus</td>
+                        <td> - </td>
+                        <td> - </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.size) }}
+                {{ form_widget(form.size) }}
+            </div>
+        </div>
+        <h3> Archetype</h3>
+        <div class="ms-2 mb-4">
+            <p>
+               Vous pourrez choisir l’archétype en vous inspirant des exemples ci-dessous.
+            </p>
+            <ul>
+                <li>
+                    <strong>Inférieur</strong> : 
+                    Cet archétype est réservé aux créatures peu belliqueuses, 
+                    les grands herbivores qui servent souvent de nourriture aux prédateurs 
+                    ainsi que les créatures de constitution particulièrement fragile. 
+                    Il peut aussi être utilisé pour une créature que vous considérez à la limite entre 2 catégories de taille.
+                </li>
+                <li>
+                    <strong>Rapide</strong> : 
+                    Cet archétype correspond aux créatures qui comptent sur la vitesse et l’esquive 
+                    pour améliorer leurs capacités de combat comme les félins petits et grands. 
+                    Elles sont généralement parmi les plus petites ou légères dans leur catégorie de taille.
+                </li>
+                <li>
+                    <strong>Puissante</strong> : 
+                    Cette catégorie est réservée à des monstres particulièrement forts, lourds ou robustes mais peu adroits
+                </li>
+                <li>
+                    <strong>Standard</strong> : 
+                    Lorsque vous ne savez pas où classer votre créature c’est sans doute qu’elle appartient à cette catégorie. 
+                    Ni particulièrement rapide, ni très lourde et puissante, c’est le cas de la majorité des humanoïdes.
+                </li>
+            </ul>
+            <div class="form-group mb-3">
+                {{ form_label(form.archetype) }}
+                {{ form_widget(form.archetype) }}
+            </div>
+            <p>
+               Ci dessous vous trouverez la table de archetypes, 
+               elle vous permettra de déterminer les valeurs de base de votre créature. 
+               Prennez des notes car vous en aurez besoin pour la suite.
+               A noter que les DM pour lorsque que la créature frappe à mains nues.
+            </p>
+            <div class="table-responsive">
+                <table class="table table-light">
+                    <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Inférieur</th>
+                        <th scope="col">Rapide</th>
+                        <th scope="col">Standard</th>
+                        <th scope="col">Puissante</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="">
+                        <th scope="row">Petite</th>
+                        <td>
+                            <strong>NC</strong> 0</br>
+                            <strong>FOR</strong> -2 
+                            <strong>DEX</strong> +1 
+                            <strong>CON</strong> -2</br>
+                            <strong>DEF</strong> 12 
+                            <strong>PV</strong> 2 
+                            <strong>Init</strong> 15</br>
+                            <strong>Attaque</strong> +1 
+                            <strong>DM</strong> 1d4-2
+                        </td>
+                        <td>
+                            <strong>NC</strong> 0</br>
+                            <strong>FOR</strong> -2 
+                            <strong>DEX</strong> +4*
+                            <strong>CON</strong> -2</br>
+                            <strong>DEF</strong> 15 
+                            <strong>PV</strong> 2 
+                            <strong>Init</strong> 19</br>
+                            <strong>Attaque</strong> +4 
+                            <strong>DM</strong> 1d4-2
+                        </td>
+                        <td>
+                            <strong>NC</strong> 0</br>
+                            <strong>FOR</strong> -1 
+                            <strong>DEX</strong> +2 
+                            <strong>CON</strong> +1</br>
+                            <strong>DEF</strong> 14 
+                            <strong>PV</strong> 3 
+                            <strong>Init</strong> 15</br>
+                            <strong>Attaque</strong> +2 
+                            <strong>DM</strong> 1d4-1
+                        </td>
+                        <td>
+                            <strong>NC</strong> 0</br>
+                            <strong>FOR</strong> +1*
+                            <strong>DEX</strong> +1 
+                            <strong>CON</strong> +1</br>
+                            <strong>DEF</strong> 13 
+                            <strong>PV</strong> 4 
+                            <strong>Init</strong> 13
+                            <strong>Attaque</strong> +1 
+                            <strong>DM</strong> 1d4+1
+                        </td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">Moyenne</th>
+                        <td>
+                            <strong>NC</strong> 0</br>
+                            <strong>FOR</strong> 0 
+                            <strong>DEX</strong> 0 
+                            <strong>CON</strong> 0</br>
+                            <strong>DEF</strong> 10 
+                            <strong>PV</strong> 4
+                            <strong>Init</strong>10</br>
+                            <strong>Attaque</strong> +1 
+                            <strong>DM</strong> 1d4
+                        </td>
+                        <td>
+                            <strong>NC</strong> 0</br>
+                            <strong>FOR</strong> 0 
+                            <strong>DEX</strong> +4*
+                            <strong>CON</strong> 0</br>
+                            <strong>DEF</strong> 16 
+                            <strong>PV</strong> 6
+                            <strong>Init</strong> 18</br>
+                            <strong>Attaque</strong> +5 
+                            <strong>DM</strong> 1d6
+                        </td>
+                        <td>
+                            <strong>NC</strong> 0</br>
+                            <strong>FOR</strong> +1 
+                            <strong>DEX</strong> +1 
+                            <strong>CON</strong> +1</br>
+                            <strong>DEF</strong> 14 
+                            <strong>PV</strong> 9
+                            <strong>Init</strong> 12</br>
+                            <strong>Attaque</strong> +2 
+                            <strong>DM</strong> 1d6+1
+                        </td>
+                        <td>
+                            <strong>NC</strong> 1</br>
+                            <strong>FOR</strong> +3*
+                            <strong>DEX</strong> +0
+                            <strong>CON</strong> +3</br>
+                            <strong>DEF</strong> 15 
+                            <strong>PV</strong> 15
+                            <strong>Init</strong> 10
+                            <strong>Attaque</strong> +4 
+                            <strong>DM</strong> 1d6+3
+                        </td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">Grande</th>
+                        <td>
+                            <strong>NC</strong> 1</br>
+                            <strong>FOR</strong> +4 
+                            <strong>DEX</strong> +0 
+                            <strong>CON</strong> +4</br>
+                            <strong>DEF</strong> 13 
+                            <strong>PV</strong> 15
+                            <strong>Init</strong> 10</br>
+                            <strong>Attaque</strong> +5 
+                            <strong>DM</strong> 1d6+4
+                        </td>
+                        <td>
+                            <strong>NC</strong> 2</br>
+                            <strong>FOR</strong> +5 
+                            <strong>DEX</strong> +4*
+                            <strong>CON</strong> +5</br>
+                            <strong>DEF</strong> 18 
+                            <strong>PV</strong> 30
+                            <strong>Init</strong> 18</br>
+                            <strong>Attaque</strong> +7 
+                            <strong>DM</strong> 2d6+5
+                        </td>
+                        <td>
+                            <strong>NC</strong> 2</br>
+                            <strong>FOR</strong> +6 
+                            <strong>DEX</strong> +1
+                            <strong>CON</strong> +6</br>
+                            <strong>DEF</strong> 16 
+                            <strong>PV</strong> 30
+                            <strong>Init</strong> 12</br>
+                            <strong>Attaque</strong> +8 
+                            <strong>DM</strong> 2d6+6
+                        </td>
+                        <td>
+                            <strong>NC</strong> 3</br>
+                            <strong>FOR</strong> +8*
+                            <strong>DEX</strong> +0 
+                            <strong>CON</strong> +8</br>
+                            <strong>DEF</strong> 18 
+                            <strong>PV</strong> 50
+                            <strong>Init</strong> 10
+                            <strong>Attaque</strong> +10
+                            <strong>DM</strong> 2d6+8
+                        </td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">Énorme</th>
+                        <td>
+                            <strong>NC</strong> 3</br>
+                            <strong>FOR</strong> +7 
+                            <strong>DEX</strong> +0 
+                            <strong>CON</strong> +7</br>
+                            <strong>DEF</strong> 16 
+                            <strong>PV</strong> 60
+                            <strong>Init</strong> 10</br>
+                            <strong>Attaque</strong> +8 
+                            <strong>DM</strong> 2d6+7
+                        </td>
+                        <td>
+                            <strong>NC</strong> 4</br>
+                            <strong>FOR</strong> +9 
+                            <strong>DEX</strong> +3*
+                            <strong>CON</strong> +9</br>
+                            <strong>DEF</strong> 20 
+                            <strong>PV</strong> 70
+                            <strong>Init</strong> 16</br>
+                            <strong>Attaque</strong> +13 
+                            <strong>DM</strong> 3d6+9
+                        </td>
+                        <td>
+                            <strong>NC</strong> 5</br>
+                            <strong>FOR</strong> +11 
+                            <strong>DEX</strong> +0
+                            <strong>CON</strong> +11</br>
+                            <strong>DEF</strong> 20 
+                            <strong>PV</strong> 90
+                            <strong>Init</strong> 10</br>
+                            <strong>Attaque</strong> +15 
+                            <strong>DM</strong> 3d6+11
+                        </td>
+                        <td>
+                            <strong>NC</strong> 6</br>
+                            <strong>FOR</strong> +13*
+                            <strong>DEX</strong> -1
+                            <strong>CON</strong> +13</br>
+                            <strong>DEF</strong> 22 
+                            <strong>PV</strong> 110
+                            <strong>Init</strong> 8
+                            <strong>Attaque</strong> +17
+                            <strong>DM</strong> 3d6+13
+                        </td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">Colossale</th>
+                        <td>
+                            <strong>NC</strong> 5</br>
+                            <strong>FOR</strong> +10 
+                            <strong>DEX</strong> +0 
+                            <strong>CON</strong> +10</br>
+                            <strong>DEF</strong> 20 
+                            <strong>PV</strong> 110
+                            <strong>Init</strong> 10</br>
+                            <strong>Attaque</strong> +12 
+                            <strong>DM</strong> 3d6+10
+                        </td>
+                        <td>
+                            <strong>NC</strong> 7</br>
+                            <strong>FOR</strong> +12 
+                            <strong>DEX</strong> +2*
+                            <strong>CON</strong> +12</br>
+                            <strong>DEF</strong> 24
+                            <strong>PV</strong> 140
+                            <strong>Init</strong> 14</br>
+                            <strong>Attaque</strong> +18 
+                            <strong>DM</strong> 4d6+12
+                        </td>
+                        <td>
+                            <strong>NC</strong> 9</br>
+                            <strong>FOR</strong> +15 
+                            <strong>DEX</strong> +0
+                            <strong>CON</strong> +15</br>
+                            <strong>DEF</strong> 26 
+                            <strong>PV</strong> 200
+                            <strong>Init</strong> 10</br>
+                            <strong>Attaque</strong> +21 
+                            <strong>DM</strong> 4d6+15
+                        </td>
+                        <td>
+                            <strong>NC</strong> 11</br>
+                            <strong>FOR</strong> +18*
+                            <strong>DEX</strong> -1
+                            <strong>CON</strong> +18</br>
+                            <strong>DEF</strong> 28
+                            <strong>PV</strong> 260
+                            <strong>Init</strong> 8
+                            <strong>Attaque</strong> +24
+                            <strong>DM</strong> 4d6+18
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>
+                Les créatures Très petites et Minuscules sont des exceptions : 
+                elles sont trop faibles pour les différencier les unes des autres et chacune d’elle forme un seul archétype.
+                </br>Voici le tableau des archétypes pour ces créatures :
+            </p>
+            <div class="table-responsive">
+                <table class="table table-light">
+                    <thead>
+                    <tr>
+                        <th scope="col">Minuscule</th>
+                        <th scope="col">Très petite</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="">
+                        <td scope="row">
+                            <strong>NC</strong> 0</br>
+                            <strong>FOR</strong> -4
+                            <strong>DEX</strong> +4*
+                            <strong>CON</strong> -4</br>
+                            <strong>DEF</strong> 16
+                            <strong>PV</strong> 1
+                            <strong>Init</strong> 19
+                            <strong>Attaque</strong> +1
+                            <strong>DM</strong> 1
+                        </td>
+                         <td>
+                            <strong>NC</strong> 0</br>
+                            <strong>FOR</strong> -3
+                            <strong>DEX</strong> +3*
+                            <strong>CON</strong> -3</br>
+                            <strong>DEF</strong> 15
+                            <strong>PV</strong> 2
+                            <strong>Init</strong> 17
+                            <strong>Attaque</strong> +3
+                            <strong>DM</strong> 1
+                        </td>
+                    </tr>
+                    <tr class="">
+                        <td scope="row">Déplacement 10 mètres par action de mouvement</td>
+                        <td>-</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <h3>Déterminer INT, SAG et CHA</h3>
+        <div class="ms-2 mb-4">
+            <p>
+                Il vous faut à présent déterminer les 3 dernières Caractéristiques. Aidez-vous des mots-clefs suivants :
+            </p>
+            <ul>
+                <li>
+                    <strong>INT</strong> : animal (-4), pas futé (-2), ordinaire (+0), futé (+2), intello (+4), génie (+6)
+                </li>
+                <li>
+                    <strong>SAG</strong> : absent (-4), distrait (-2), ordinaire (0), vigilant (+2), hypersensible (+4), extralucide (+6)
+                <li>
+                    <strong>CHA</strong> : horrible (-4), effrayant ou étrange (-2), quelconque (0), convaincant (+2), fascinant (+4), envoutant (+6)
+                </li>
+            </ul>
+        </div>
+        <h3>Ajouter des améliorations</h3>
+        <div class="ms-2 mb-4">
+            <p>
+                La créature que vous avez créée est totalement viable, vous pouvez l’utiliser telle quelle. 
+                Toutefois, de nombreuses créatures possèdent des capacités spéciales,
+                des pouvoirs et des particularités que ces simples scores ne peuvent pas simuler.
+                Pour cela, vous pouvez ajouter des améliorations à votre créature.
+            </p>
+            <h4>Ajouter un rang de boss</h4>
+            <p class="ms-2 mb-4">
+                Afin de simuler une créature un peu exceptionnelle ou hors norme, 
+                vous avez la possibilité d’ajouter des rangs de Boss, cela augmente la puissance, donc le NC, de la créature.</br>
+                <strong>Chaque rang de Boss augmente le NC de +1 et apporte +2 en attaque, aux DM, en DEF et +20 PV.</strong></br>
+                Cependant, Il est aussi possible de répartir ces bonus de façon différente avec ces deux variantes :
+            </p>
+            <ul>
+                <li>
+                    <strong>Boss berserk</strong> : +4 en attaque, +1d6 DM et +10 PV
+                </li>
+                <li>
+                    <strong>Boss résistant</strong> : +1 en attaque, +3 en DEF et +30 PV
+                </li>
+            </ul>
+            <p> La table ci-dessous peut vous guider pour décider de la pertinence d’un rang de boss et de son niveau.</p>
+            <div class="table-responsive">
+                <table class="table table-light">
+                    <thead>
+                    <tr>
+                        <th scope="col">Rang</th>
+                        <th scope="col">Puissance</th>
+                        <th scope="col">Type de boss</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="">
+                        <td scope="row">1</td>
+                        <td>Remarquable</td>
+                        <td>Vétéran, mâme solitaire, prédateur exceptionnel</td>
+                    </tr>
+                    <tr class="">
+                        <td scope="row">2</td>
+                        <td>Supérieure</td>
+                        <td>Sergent, chef de meute, chef de tribu</td>
+                    </tr>
+                    <tr class="">
+                        <td scope="row">3</td>
+                        <td>Majeure</td>
+                        <td>Grand chef, champion, démon majeur</td>
+                    </tr>
+                    <tr class="">
+                        <td scope="row">4</td>
+                        <td>Exceptionnelle</td>
+                        <td>Général, héros, créature très ancienne</td>
+                    </tr>
+                    <tr class="">
+                        <td scope="row">5+</td>
+                        <td>Légendaire</td>
+                        <td>Némésis, héros majeur, prince-démon</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-group">
+                    {{ form_label(form.boss_rank) }}
+                    {{ form_widget(form.boss_rank) }}
+            </div>
+            <div class="form-group mb-3">
+                {{ form_label(form.boss_type) }}
+                {{ form_widget(form.boss_type) }}
+            </div>
+            <h4>Ajouter des voie</h4>
+            <p class="ms-2">
+                A l'instar des joueurs, les créatures peuvent avoir des voies. 
+                Noter qu'ajouter une voie à une créature augmente son NC</br>
+                Par exemple : Donner la Voie du prédateur au rang 2 à une créature augmente son NC de +2
+            </p>
+             {% for i in range(1, 6) %}
+                <div class="form-check mt-4">
+                    <input class="{{'form-check-input path' ~ i ~ 'checkboxdisabled'}}" type="checkbox" value="" 
+                        id={{ 'path' ~ i ~'checkbox' }}>
+                    <label class="form-check-label" for="">
+                        Voie non aquise
+                    </label>
+                </div>
+                <div class="form-group">
+                    {{ form_label(attribute(form, 'path' ~ i ~ '_name')) }}
+                    {{ form_widget(attribute(form, 'path' ~ i ~ '_name')) }}
+                </div>
+                {% for y in range(1, 5) %}
+                    <div class="form-check mt-2">
+                        <input class="{{'form-check-input path' ~ i ~ 'checkboxdisabled'}}" type="checkbox" value="" 
+                            id={{ 'path' ~ i ~'comp' ~ y ~ 'checkbox' }}>
+                        <label class="form-check-label" for="">
+                            Cappacité non aquise
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(attribute(form, 'path' ~ i ~ '_comp' ~ y ~ '_name')) }}
+                        {{ form_widget(attribute(form, 'path' ~ i ~ '_comp' ~ y ~ '_name')) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(attribute(form, 'path' ~ i ~ '_comp' ~ y ~ '_desc')) }}
+                        {{ form_widget(attribute(form, 'path' ~ i ~ '_comp' ~ y ~ '_desc')) }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            <h4 class="mt-3">Ajouter des capacités</h4>
+            <p class="ms-2 mb-4">
+                Vous serez parfois amené à utiliser des capacités issues des Profils de personnage comme par exemple : 
+                Invisibilité, Ténèbres, etc.</br>
+                D’autres fois, certaines aptitudes spéciales n’ont tout simplement aucun équivalent dans les voies de créatures 
+                ou de Profil et il vous faudra les inventer.</br>
+                Vous n’êtes pas obliger d’augmenter le NC d’une créature à chaque fois que vous lui ajouter une capacité.</br>
+                Il vous faudra apprécier par vous-même si cette capacité supplémentaire 
+                ou un ensemble de capacités modifie la puissance finale de la créature et le Modificateur à apporter au NC.</br>
+
+                Aucune règle précise ne peut être définie, essayez simplement d'être cohérent avec le NC de la créature.
+            </p>
+            <div class="form-group">
+                <label class="from-label required" for="special_skills">Cappacités spéciales</label>
+                <ul class="special_skills list-group"
+                    data-index="{{ form.special_skills|length > 0 ? form.special_skills|last.vars.name + 1 : 0 }}"
+                    data-prototype="{{ form_widget(form.special_skills.vars.prototype)|e('html_attr') }}"
+                >
+                    {% for special_skill in form.special_skills %}
+                        <li class="list-group-item">{{ form_widget(special_skill.name) }}</li>
+                    {% endfor %}
+                </ul>
+                <button type="button" class=" btn btn-primary add_item_link my-2" data-collection-holder-class="special_skills">Ajouter une cappacité</button>
+            </div>
+        </div>
+        <h3>Finaliser votre créature</h3>
+        <div class="ms-2 mb-4">
+            <p>
+                Vous avez maintenant la plupart des informations pour créer votre créature. 
+                Il ne vous reste plus qu'à reprendre vos notes pour remplir les champs ci-dessous 
+                et à cliquer sur le bouton "Envoyer".
+            </p>
+        </div>
+        <h3> Général</h3>
+        <div class="ms-2 mb-4">
+            <div class="form-group mb-3">
+                {{ form_label(form.name) }}
+                {{ form_widget(form.name) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.family) }}
+                <p class="ps-3">
+                    La famile de la créature est simplement utile pour la retrouver plus facilement.
+                    Exemples de familles : "PNJ", "Orque", etc.
+                </p>
+                {{ form_widget(form.family) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.natural_environment) }}
+                {{ form_widget(form.natural_environment) }}
+            </div>
+        </div>
+        <h3>Statistiques</h3>
+        <div class="ms-2 mb-4">
+            <div class="form-group">
+                {{ form_label(form.nc) }}
+                {{ form_widget(form.nc) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.max_hp) }}
+                {{ form_widget(form.max_hp) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.def) }}
+                {{ form_widget(form.def) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.init) }}
+                {{ form_widget(form.init) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.fo) }}
+                {{ form_widget(form.fo) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.dex) }}
+                {{ form_widget(form.dex) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.con) }}
+                {{ form_widget(form.con) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.int) }}
+                {{ form_widget(form.int) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.sag) }}
+                {{ form_widget(form.sag) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.cha) }}
+                {{ form_widget(form.cha) }}
+            </div>
+            <div class="my-3">
+                <div class="d-flex my-2">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.advantage_fo) }}
+                            {{ form_widget(form.advantage_fo) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.advantage_dex) }}
+                            {{ form_widget(form.advantage_dex) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.advantage_con) }}
+                            {{ form_widget(form.advantage_con) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.advantage_int) }}
+                            {{ form_widget(form.advantage_int) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.advantage_sag) }}
+                            {{ form_widget(form.advantage_sag) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.advantage_cha) }}
+                            {{ form_widget(form.advantage_cha) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+               {{ form_label(form.rd) }}
+               <p class="ps-3">
+                    Certaines créatures ont une résistance à certains types de dégâts.
+                    C'est peut-être le cas de la votre. Indiquez ici combien de dégâts sont réduits.
+                </p>
+               {{ form_widget(form.rd) }}
+            </div>
+            <div class="form-group">
+               {{ form_label(form.rd_comment) }}
+               <p class="ps-3">
+                    Indiquez ici le type de dégâts qui annule la réduction de dégâts.
+                </p>
+               {{ form_widget(form.rd_comment) }}
+            </div>
+        </div>
+        <h3>Description et Histoire</h3>
+        <div class="ms-2 mb-4">
+            <p>
+                Si vous en avez aucune idée, vous pouvez simplement mettre un espace dans les champs ci-dessous.
+            </p>
+            <div class="form-group">
+               {{ form_label(form.description) }}
+               {{ form_widget(form.description) }}
+            </div>
+            <div class="form-group">
+               {{ form_label(form.story) }}
+               {{ form_widget(form.story) }}
+            </div>
+        </div>
+        <h3>Attaques</h3>
+        <div class="ms-2 mb-4">
+            <div class="form-group">
+                <ul class="attacks list-group"
+                    data-index="{{ form.attacks|length > 0 ? form.attacks|last.vars.name + 1 : 0 }}"
+                    data-prototype="{{ form_widget(form.attacks.vars.prototype)|e('html_attr') }}"
+                >
+                    {% for attack in form.attacks %}
+                        <li class="list-group-item">{{ form_widget(attack.name) }}</li>
+                    {% endfor %}
+                </ul>
+                <button type="button" class=" btn btn-primary add_item_link my-2" data-collection-holder-class="attacks">Ajouter une attaque</button>
+            </div>
+        </div>
+        <div class="form-group">
+                {{ form_widget(form.hp) }}
+        </div>
+        <div class="form-group">
+            {{ form_widget(form.detrimental_states) }}
+        </div>
+        {{ form_rest(form) }}
+        <input type="submit" class="btn btn-primary my-2"/>
+        {{ form_end(form) }}
+    </div>
+</div>
+<script>
+    const addFormDeleteLink = (item) => {
+        const removeFormButton = document.createElement('button');
+        removeFormButton.innerText = 'X';
+        removeFormButton.classList.add('btn', 'btn-danger', 'mb-1', 'mt-2');
+
+        const buttonDiv = document.createElement('div');
+        buttonDiv.classList.add('d-grid', 'gap-2', 'col-md-4');
+        buttonDiv.append(removeFormButton);
+
+        item.append(buttonDiv);
+
+        removeFormButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            item.remove();
+        });
+    };
+
+    const addFormToCollection = (e) => {
+        const collectionHolder = document.querySelector('.' + e.currentTarget.dataset.collectionHolderClass);
+        const div = document.createElement('div');
+        const item = document.createElement('li');
+        item.innerHTML = collectionHolder
+        .dataset
+        .prototype
+        .replace(
+            /__name__/g,
+            collectionHolder.dataset.index
+        );
+        div.append(item);
+        collectionHolder.appendChild(div);
+        collectionHolder.dataset.index++;
+        // add a delete link to the new form
+        addFormDeleteLink(div);
+    };
+    document
+    .querySelectorAll('ul.attacks li')
+    .forEach((attack) => {
+        addFormDeleteLink(attack)
+    });
+    document
+    .querySelectorAll('ul.special_skills li')
+    .forEach((special_skill) => {
+        addFormDeleteLink(special_skill)
+    });
+    document
+    .querySelectorAll('.add_item_link')
+    .forEach(btn => {
+        btn.addEventListener("click", addFormToCollection)
+    });
+
+    for (let i = 1; i <=6 ; i++) {
+        const pathcheckbox = document.querySelector('#path' + i + 'checkbox');
+        pathcheckbox.addEventListener('change', function() {
+            const isChecked = this.checked;
+            if (isChecked) {
+                for (let x = i; x <= 6; x++){
+                    const pathdisabled = document.querySelectorAll('.path' + x + 'disabled');
+                    pathdisabled.forEach(function(value, index) {
+                        value.value = 'Pas acquise';
+                        value.disabled = true;
+                    });
+                    const pathcheckboxdisabled = document.querySelectorAll('.path' + x + 'checkboxdisabled');
+                    pathcheckboxdisabled.forEach(function(value, index) {
+                        value.checked = true;
+                    });
+                }
+            } else {
+                for (let x = i; x >= 1; x--){
+                    const pathdisabled = document.querySelectorAll('.path' + x + 'disabled');
+                    pathdisabled.forEach(function(value, index) {
+                        value.value = '';
+                        value.disabled = false;
+                    });
+                    const pathcheckboxdisabled = document.querySelectorAll('.path' + x + 'checkboxdisabled');
+                    pathcheckboxdisabled.forEach(function(value, index) {
+                        value.checked = false;
+                    });
+                }
+            }
+        });
+        for (let y = 1; y <= 5; y++){
+            const pathcompcheckbox = document.querySelector('#path' + i + 'comp' + y + 'checkbox');
+            pathcompcheckbox.addEventListener('change', function() {
+                const isChecked = this.checked;
+                if (isChecked) {
+                    for ( let x = y; x <= 5; x++ ){
+                        const pathcompname = document.querySelector('.path' + i + '_comp' + x +'_name');
+                        const pathcompdesc = document.querySelector('.path' + i + '_comp' + x +'_desc');
+                        const pathcompcheckbox = document.querySelector('#path' + i + 'comp' + x + 'checkbox');
+
+                        pathcompname.value = 'Pas acquise';
+                        pathcompname.disabled = true;
+
+                        pathcompdesc.value = 'Pas acquise';
+                        pathcompdesc.disabled = true;
+
+                        pathcompcheckbox.checked = true;
+
+                    }
+                } else {
+                    const pathname = document.querySelector('.path' + i + '_name');
+                    pathname.value = '';
+                    pathname.disabled = false;
+
+                    const pathcheckbox = document.querySelector('#path' + i + 'checkbox');
+                    pathcheckbox.checked = false;
+
+                    for ( let x = y; x >= 1; x-- ){
+                        const pathcompname = document.querySelector('.path' + i + '_comp' + x +'_name');
+                        const pathcompdesc = document.querySelector('.path' + i + '_comp' + x +'_desc');
+                        const pathcompcheckbox = document.querySelector('#path' + i + 'comp' + x + 'checkbox');
+
+                        pathcompname.value = '';
+                        pathcompname.disabled = false;
+
+                        pathcompdesc.value = '';
+                        pathcompdesc.disabled = false;
+
+                        pathcompcheckbox.checked = false;
+
+                    }
+                }
+            });
+        }
+    }
+</script>
+{% endblock %}

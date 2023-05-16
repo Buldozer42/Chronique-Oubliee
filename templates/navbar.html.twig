@@ -1,0 +1,53 @@
+{% block body %}
+<nav class="navbar navbar-expand-sm navbar-light bg-light">
+      <div class="container">
+        <a class="navbar-brand" href="{{ path('playerlist') }}">Drs</a>
+        <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavId" aria-controls="collapsibleNavId"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavId">
+            <ul class="navbar-nav me-auto mt-2 mt-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('playerlist') }}" aria-current="page">Home <span class="visually-hidden">(current)</span></a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="{{ path('playerlist') }}" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Personnage</a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownId">
+                        <a class="dropdown-item" href="{{ path('playerlist') }}">Consulter</a>
+                        <a class="dropdown-item" href="{{ path('playerform') }}">Ajouter</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="{{ path('creaturelist') }}" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Créature</a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownId">
+                        <a class="dropdown-item" href="{{ path('creaturelist') }}">Consulter</a>
+                        <a class="dropdown-item" href="{{ path('creatureform') }}">Ajouter</a>
+                        <a class="dropdown-item" href="{{ path('creature_assisted_creation') }}">Création assistée</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('encountersgenerator') }}" aria-current="page">Générateur</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="{{ path('creaturelist') }}" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Equipement</a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownId">
+                        <a class="dropdown-item" href="{{ path('contact_weapon') }}">Armes aux contact</a>
+                        <a class="dropdown-item" href="{{ path('distance_weapon') }}">Armes a distances</a>
+                        <a class="dropdown-item" href="{{ path('armor') }}">Armures</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="{{ path('creaturelist') }}" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Lien utile</a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownId">
+                        <a class="dropdown-item" href="https://www.co-drs.org/fr" target="_blank">Drs officiel</a>
+                        <a class="dropdown-item" href="http://comob.rpgapps.net/" target="_blank">Add-on</a>
+                        <a class="dropdown-item" href="https://black-book-editions.fr/forums.php?topic_id=7547" target="_blank">Info dé de vié/nouveaux profils</a>
+                        <a class="dropdown-item" href="https://black-book-editions.fr/forums.php?a=last&topic_id=11895" target="_blank">Création alternative/tableaux des races</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+  </div>
+</nav>
+{% endblock %}

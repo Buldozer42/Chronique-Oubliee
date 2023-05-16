@@ -1,0 +1,403 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+<style>
+    .size-cell{
+        width : 33%;
+    }
+</style>
+{% include 'navbar.html.twig' %}
+<div class="container">
+    <div class="text-center">
+        <h1>Fiche de personage</h1>
+    </div>
+    <div class="d-flex align-items-center me-4">
+        <a href="{{ path('playeredit', {id: player.id}) }}"> <button class="btn btn-sm btn-outline-secondary">Edit</button></a>
+        <h2 class="mx-2">Personage : {{ player.name }}</h2>
+    </div>
+    <div>
+        <div class="table-responsive">
+            <table class="table table-light">
+                <thead>
+                    <tr>
+                        <th scope="col">Profil</th>
+                        <th scope="col">Niveaux</th>
+                        <th scope="col">Race</th>
+                        <th scope="col">Sexe</th>
+                        <th scope="col">Age</th>
+                        <th scope="col">Taille</th>
+                        <th scope="col">Poids</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="">
+                        <td scope="row">{{ player.class }}</td>
+                        <td>{{ player.level }}</td>
+                        <td>{{ player.race }}</td>
+                        <td>{{ player.sexe }}</td>
+                        <td>{{ player.age }} ans</td>
+                        <td>{{ player.height }} cm</td>
+                        <td>{{ player.weight }} kg</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="table-responsive col-md-4">
+            <table class="table table-light">
+                <thead>
+                    <tr>
+                        <th scope="col">CARAC.</th>
+                        <th scope="col">Val.</th>
+                        <th scope="col">Mod.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="">
+                        <th scope="row">FOR{% if player.isAdvantageFo %}*{% endif %}</th>
+                        <td>{{ player.fo }}</td>
+                        <td>{{ player.getModFo }}</td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">DEX{% if player.isAdvantageDex %}*{% endif %}</th>
+                        <td>{{ player.dex }}</td>
+                        <td>{{ player.getModDex }}</td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">CON{% if player.isAdvantageCon %}*{% endif %}</th>
+                        <td>{{ player.con }}</td>
+                        <td>{{ player.getModCon }}</td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">{% if player.isMagicInt %}.{% endif %}INT{% if player.isAdvantageInt %}*{% endif %}</th>
+                        <td>{{ player.int }}</td>
+                        <td>{{ player.getModInt }}</td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">{% if player.isMagicSag %}.{% endif %}SAG{% if player.isAdvantageSag %}*{% endif %}</th>
+                        <td>{{ player.sag }}</td>
+                        <td>{{ player.getModSag }}</td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">{% if player.isMagicCha %}.{% endif %}CHA{% if player.isAdvantageCha %}*{% endif %}</th>
+                        <td>{{ player.cha }}</td>
+                        <td>{{ player.getModCha }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-8">
+            <div class="row">
+                <div class="table-responsive col-md-6">
+                    <table class="table table-light">
+                        <thead>
+                            <tr>
+                                <th scope="col">Combat</th>
+                                <th scope="col"></th>
+                                <th scope="col"></th>
+                                <th scope="col">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="">
+                                <th scope="row">Attaque aux contact</th>
+                                <td>{{ player.getModFo() }}</td>
+                                <td>{{ player.level }}</td>
+                                <td>{{ player.getAttCon }}</td>
+                            </tr>
+                            <tr class="">
+                                <th scope="row">Attaque a distance</th>
+                                <td>{{ player.getModDex }}</td>
+                                <td>{{ player.level }}</td>
+                                <td>{{ player.getAttDis }}</td>
+                            </tr>
+                            <tr class="">
+                                <th scope="row">Attaque magique</th>
+                                <td>{{ player.getModMag }}</td>
+                                <td>{{ player.level }}</td>
+                                <td>{{ player.getAttMag }}</td>
+                            </tr>
+                            <tr class="">
+                                <th scope="row">Initaitive</th>
+                                <td>{{ player.dex }}</td>
+                                <td>{{ player.init - player.dex }}</td>
+                                <td>{{ player.init }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-responsive col-md-6">
+                    <table class="table table-light">
+                        <tbody>
+                            <tr class="">
+                                <th scope="row">Dé de vie</th>
+                                <td>D{{ player.getDiceLife }}</td>                                </tr>
+                            <tr class="">
+                                <th scope="row">Point de vie</th>
+                                <td>{{ player.getMaxHp }}</td>
+                            </tr>
+                            <tr class="">
+                                <th scope="row">Point de vie restant</th>
+                                <td>{{ player.hp }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-light">
+                        <thead>
+                            <tr>
+                                <th scope="col">Defence</th>
+                                <th scope="col">Base</th>
+                                <th scope="col">Divers</th>
+                                <th scope="col">DEX</th>
+                                <th scope="col">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="">
+                                <th scope="row">DEF</th>
+                                <td>10</td>
+                                <td>{{ player.def - (player.getModDex + 10) }}</td>
+                                <td>{{ player.getModDex }}</td>
+                                <td>{{ player.def }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <h4>Cappacité raciale</h4>
+            <p>
+                {{ player.getRacialSkil()}}
+            </p>
+        </div>
+        <div class="col-md-8">
+            <div class="table-responsive">
+                <table class="table table-light">
+                    <thead>
+                        <tr>
+                            <th scope="col">Arme</th>
+                            <th scope="col">Attaque</th>
+                            <th scope="col">DM</th>
+                            <th scope="col">Spécial</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="">
+                            <td scope="row">{{ weapons.weapon1.name }}</td>
+                            <td>{{ weapons.weapon1.att }}</td>
+                            <td>{{ weapons.weapon1.dm }}</td>
+                            <td>{{ weapons.weapon1.special }}</td>
+                        </tr>
+                        <tr class="">
+                            <td scope="row">{{ weapons.weapon2.name }}</td>
+                            <td>{{ weapons.weapon2.att }}</td>
+                            <td>{{ weapons.weapon2.dm }}</td>
+                            <td>{{ weapons.weapon2.special }}</td>
+                        </tr>
+                        <tr class="">
+                            <td scope="row">{{ weapons.weapon3.name }}</td>
+                            <td>{{ weapons.weapon3.att }}</td>
+                            <td>{{ weapons.weapon3.dm }}</td>
+                            <td>{{ weapons.weapon3.special }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        {% if skills.path1.name %}
+        <h3>Cappacité</h3>
+        <div class="table-responsive">
+            <table class="table table-light table-bordered">
+                <thead>
+                    <tr class="text-center">
+                        <th scope="col"</th>
+                        <th scope="col" class="size-cell">Voie 1</th>
+                        <th scope="col" class="size-cell">Voie 2</th>
+                        <th scope="col" class="size-cell">Voie 3</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="text-center">
+                        <th scope="row">R</th>
+                        <td>{{skills.path1.name}}</td>
+                        <td>{{skills.path2.name}}</td>
+                        <td>{{skills.path3.name}}</td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">1</th>
+                        <td><strong>{{skills.path1.comp.comp1.name}}</strong></br>{{skills.path1.comp.comp1.desc}}</td>
+                        <td><strong>{{skills.path2.comp.comp1.name}}</strong></br>{{skills.path2.comp.comp1.desc}}</td>
+                        <td><strong>{{skills.path3.comp.comp1.name}}</strong></br>{{skills.path3.comp.comp1.desc}}</td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">2</th>
+                        <td><strong>{{skills.path1.comp.comp2.name}}</strong></br>{{skills.path1.comp.comp2.desc}}</td>
+                        <td><strong>{{skills.path2.comp.comp2.name}}</strong></br>{{skills.path2.comp.comp2.desc}}</td>
+                        <td><strong>{{skills.path3.comp.comp2.name}}</strong></br>{{skills.path3.comp.comp2.desc}}</td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">3</th>
+                        <td><strong>{{skills.path1.comp.comp3.name}}</strong></br>{{skills.path1.comp.comp3.desc}}</td>
+                        <td><strong>{{skills.path2.comp.comp3.name}}</strong></br>{{skills.path2.comp.comp3.desc}}</td>
+                        <td><strong>{{skills.path3.comp.comp3.name}}</strong></br>{{skills.path3.comp.comp3.desc}}</td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">4</th>
+                        <td><strong>{{skills.path1.comp.comp4.name}}</strong></br>{{skills.path1.comp.comp4.desc}}</td>
+                        <td><strong>{{skills.path2.comp.comp4.name}}</strong></br>{{skills.path2.comp.comp4.desc}}</td>
+                        <td><strong>{{skills.path3.comp.comp4.name}}</strong></br>{{skills.path3.comp.comp4.desc}}</td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">5</th>
+                        <td><strong>{{skills.path1.comp.comp5.name}}</strong></br>{{skills.path1.comp.comp5.desc}}</td>
+                        <td><strong>{{skills.path2.comp.comp5.name}}</strong></br>{{skills.path2.comp.comp5.desc}}</td>
+                        <td><strong>{{skills.path3.comp.comp5.name}}</strong></br>{{skills.path3.comp.comp5.desc}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <h4>Description</h4>
+            <p>{{player.description}}</p>
+        </div>
+        <div class="col-md-8">
+            <h4>Inventaire</h4>
+            <div class="table-responsive">
+                <table class="table table-light">
+                    <tbody>
+                        {% set numItem = 0 %}
+                        {% for i in range(1, nbInventoryLine) %}
+                            <tr class="">
+                                {% for y in range (numItem, numItem + 5)  %}
+                                    {% if player.inventory[y] is defined %}
+                                        <td>{{player.inventory[y].getName}}</td>
+                                    {% else %}
+                                        <td></td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            {% set numItem = numItem + 6 %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex">
+                <h5 class="me-2">Bourse :</h5>
+                <p class="me-5">{{money.po}} po {{money.pa}} pa</p>
+                <h5 class="mx-2">Ecombrement : </h5>
+                <p>{{player.clutter}}/{{player.fo}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Histoire</h4>
+            <p>{{player.story}}</p>
+        </div>
+        <div class="col-md-6">
+            <div class="table-responsive">
+                <table class="table table-light">
+                    <thead>
+                        <tr>
+                            <th scope="col">PC</th>
+                            <th scope="col">PR</th>
+                            <th scope="col">PM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="">
+                            <td scope="row">Max : {{player.getMaxPc}}</td>
+                            <td scope="row">Max : {{player.getMaxPr}}</td>
+                            <td scope="row">Max : {{player.getMaxPm}}</td>
+                        </tr>
+                        <tr class="">
+                            <td scope="row">Restant : {{player.pc}}</td>
+                            <td scope="row">Restant : {{player.pr}}</td>
+                            <td scope="row">Restant : {{player.pm}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex">
+                <h5 class="me-2">Point de récupération : </h5>
+                <p>D{{player.getDiceLife}}+</p>
+                <p>{{player.getModCon}}+</p>
+                <p>{{player.level}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        {% if skills.path4.name or skills.path6.name %}
+        <h3>Cappacité</h3>
+        <div class="table-responsive">
+            <table class="table table-light table-bordered">
+                <thead>
+                    <tr class="text-center">
+                        <th scope="col"></th>
+                        <th scope="col" class="size-cell">Voie 4</th>
+                        <th scope="col" class="size-cell">Voie 5</th>
+                        <th scope="col" class="size-cell">Voie de prestige</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="text-center">
+                        <th scope="row">R</th>
+                        <td>{{skills.path4.name}}</td>
+                        <td>{{skills.path5.name}}</td>
+                        <td>{{skills.path6.name}}</td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">1</th>
+                        <td><strong>{{skills.path4.comp.comp1.name}}</strong></br>{{skills.path4.comp.comp1.desc}}</td>
+                        <td><strong>{{skills.path5.comp.comp1.name}}</strong></br>{{skills.path5.comp.comp1.desc}}</td>
+                        <td><strong>{{skills.path6.comp.comp1.name}}</strong></br>{{skills.path6.comp.comp1.desc}}</td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">2</th>
+                        <td><strong>{{skills.path4.comp.comp2.name}}</strong></br>{{skills.path4.comp.comp2.desc}}</td>
+                        <td><strong>{{skills.path5.comp.comp2.name}}</strong></br>{{skills.path5.comp.comp2.desc}}</td>
+                        <td><strong>{{skills.path6.comp.comp2.name}}</strong></br>{{skills.path6.comp.comp2.desc}}</td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">3</th>
+                        <td><strong>{{skills.path4.comp.comp3.name}}</strong></br>{{skills.path4.comp.comp3.desc}}</td>
+                        <td><strong>{{skills.path5.comp.comp3.name}}</strong></br>{{skills.path5.comp.comp3.desc}}</td>
+                        <td><strong>{{skills.path6.comp.comp3.name}}</strong></br>{{skills.path6.comp.comp3.desc}}</td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">4</th>
+                        <td><strong>{{skills.path4.comp.comp4.name}}</strong></br>{{skills.path4.comp.comp4.desc}}</td>
+                        <td><strong>{{skills.path5.comp.comp4.name}}</strong></br>{{skills.path5.comp.comp4.desc}}</td>
+                        <td><strong>{{skills.path6.comp.comp4.name}}</strong></br>{{skills.path6.comp.comp4.desc}}</td>
+                    </tr>
+                    <tr class="">
+                        <th scope="row">5</th>
+                        <td><strong>{{skills.path4.comp.comp5.name}}</strong></br>{{skills.path4.comp.comp5.desc}}</td>
+                        <td><strong>{{skills.path5.comp.comp5.name}}</strong></br>{{skills.path5.comp.comp5.desc}}</td>
+                        <td><strong>{{skills.path6.comp.comp5.name}}</strong></br>{{skills.path6.comp.comp5.desc}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
