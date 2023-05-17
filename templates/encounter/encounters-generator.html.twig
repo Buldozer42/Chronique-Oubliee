@@ -10,9 +10,32 @@
         {{ form_widget(form.entity_id) }}
         
         {{ form_rest(form) }}
-            <button type="submit" class="btn btn-primary ms-2">Ajouter</button>
+            <button type="submit" class="btn btn-primary mx-2">Ajouter</button>
+            <!-- Modal trigger button -->
+            <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#modalNotepad">
+                Note
+            </button>
         {{ form_end(form) }}
     </div>
+</div>
+<!-- Modal Body -->
+<div class="modal fade" id="modalNotepad" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitleId">Bloc-notes </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <label for="note" class="form-label">Voici un bloc-notes</label>
+          <textarea class="form-control" name="note" id="note" rows="3"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary save-note">Save</button>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="container">
     <div class="row mt-4">
@@ -227,7 +250,6 @@
             type: "POST",
             url: base_url.replace("tmp", num).replace("pmt", nb_hp),
             success: function(data) {
-                // alert("HP soustrait avec succès ! " + data.hp);
                 health.text(data.hp + "/" + data.maxHp);
                 let percent = data.hp / data.maxHp * 100;
                 updateHealthBar(health_bar, percent);
@@ -277,29 +299,13 @@
             let num = $(this).data("entity-num");
             manageHp(num, 1, "add");
         });
+
+        $("#note").val(getCookie("note"));
+
+        $(".save-note").click(function() {
+            setCookie("note", $("#note").val(), 365);
+            console.log(getCookie("note"));
+        });
     });
 </script>
 {% endblock %}
-{# let nb_clicks = 0;
-        let interval = null;
-        $(".damage").mousedown(function()
-        {
-            let num = $(this).data("entity-num");
-            let health = $(".entity"+num).find('.health');
-            interval = setInterval(function() {
-                nb_clicks++;
-                health.text((health.text().split("/")[0] - 1 )+ "/" + health.text().split("/")[1]);
-            }, 200)
-        });
-        $(".damage").mouseup(function()
-        {
-            clearInterval(interval);
-            manageHp(num, nb_clicks, "subtract");
-            console.log(nb_clicks);
-        });
-        $(".damage").mouseleave(function()
-        {
-            clearInterval(interval);
-            manageHp(num, nb_clicks, "subtract");
-            console.log(nb_clicks);
-        }); #}
