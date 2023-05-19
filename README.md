@@ -23,7 +23,7 @@ la gestion des sessions de jeu, des combats et bien plus encore.
 # Fonctionnalités
 Le projet est actuellement en cours de développement. Les fonctionnalités suivantes sont déjà implémentées :
   * Gestion des personnages et des créature : création, modification et suppression de personnages avec leurs attributs, compétences et équipements.
-  * Gestion des combats : création et gestion des combats grâce à un générateur de rencontres.
+  * Gestion des combats : création et gestion des combats grâce à un générateur de rencontres, aide pour créer des combats équilibrés.
   * Gestion des règles : accès rapide aux règles du jeu, aux références et aux ressources utiles pour le MJ.
   * Accès rapide aux aides de jeu : accès rapide aux aides de jeu, aux références et aux ressources utiles pour le MJ.
   * Accès à des playlists musicales : accès à des playlists musicales pour accompagner les sessions de jeu pendant les combats, les phases calme et les tavernes.
