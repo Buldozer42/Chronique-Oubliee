@@ -68,6 +68,7 @@ DATABASE_URL="mysql://!name!:!mdp!@127.0.0.1:3306/drs?serverVersion=8&charset=ut
 # or
 DATABASE_URL="postgresql://app:!ChangeMe!@127.0.0.1:5432/app?serverVersion=15&charset=utf8"
 ```
+ * Pour créer et remplir la base de donnée utiliser le script suivant [import.sql](import.sql), il est possible de l'importer directement dans phpMyAdmin.
 
 # Utilisation
 ## Lancement
