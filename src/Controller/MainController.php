@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Form\Type\PlayerFormType;
 use App\Form\Type\CreatureFormType;
 use App\Form\EntitySearchType;
+use App\Form\Type\NumberType;
 use App\Form\ManageHpType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -27,7 +28,15 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class MainController extends AbstractController
 {
     /**
-     * @Route("/", name="playerlist")
+     * @Route("/", name="index")
+     */
+    public function index(): Response
+    {
+        return $this->render('index.html.twig');
+    }
+
+    /**
+     * @Route("/player", name="playerlist")
      */
     public function playerlist(Request $request, PlayerRepository $playerRepository,  ?array $players): Response
     {
@@ -593,7 +602,7 @@ class MainController extends AbstractController
     }
 
     /**
-     * @Route("/creature/assisted-creation", name="creature_assisted_creation")
+     * @Route("/creature-assisted-creation", name="creature_assisted_creation")
      */
     public function creatureAssistedCreation(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger) : Response
     {
@@ -619,5 +628,23 @@ class MainController extends AbstractController
      */
     public function armor(){
         return $this->render('equipment/armor.html.twig');
+    }
+
+    /**
+     * @Route("/encounter/create/{nc}", name="encounter_create")
+     */
+    public function createEncounter(Request $request, CreatureRepository $createuRepository) : Response
+    {
+        $form = $this->createForm(NumberType::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            return $this->redirectToRoute('encounter_create', ['nc' => $form->getData()['number']]);
+        }
+        $creatures = $createuRepository->findAllBellowNc($request->get('nc'));
+        return $this->render('encounter/encounter-create.html.twig', [
+            'creatures' => $creatures,
+            'form' => $form->createView(),
+        ]);
     }
 }

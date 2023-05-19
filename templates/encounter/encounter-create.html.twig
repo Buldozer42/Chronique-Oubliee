@@ -1,0 +1,162 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+{% include 'navbar.html.twig' %}
+<div class="container"> 
+    <h1>Aide à la création de rencontre</h1>
+    <p>
+        Voici un outil qui vous permet de créer une rencontre équilibrée pour vos joueurs.<br>
+        Il vous suffit de rentrer le niveau de vos joueurs et de choisir les créatures que vous voulez ajouter à la rencontre.<br>
+        Une bare de difficulté, se trouvant en bas de page, vous indique si la rencontre est équilibrée ou non.<br>
+    </p>
+    <div class="d-flex col-md-4">
+        {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
+        {{ form_widget(form.number, {'attr': {'min': '1'}}) }}
+                 
+        {{ form_rest(form) }}
+            <button type="submit" class="btn btn-primary ms-2">Envoyer</button>
+        {{ form_end(form) }}
+    </div>
+    {% if creatures %}
+    <div class="d-flex justify-content-between mt-2">
+        <h3>Créature disponible</h3>
+        <button class="btn btn-sm expand"><span class="material-symbols-outlined">expand_more</span></button>
+    </div>
+    <div class="table-responsive d-none">
+        <table class="table table-light">
+            <thead>
+            <tr>
+                <th scope="col">Nc</th>
+                <th scope="col">Nom</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for creature in creatures %}
+                <tr class="table-row">
+                    <td scope="row" class="nc">{{creature.nc}}</td>
+                    <td class="name">{{creature.name}}</td>
+                    <td><button type="button" class="btn btn-primary add-btn">Ajouter</button></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <h3 class="mt-2">Difficulté</h3>
+    <div class="text-center my-2 border border-2 rounded bar">
+        <p class="difficulty">0/0</p>
+    </div>
+    <div>
+        <ul class="creature-list mb-4"></ul>
+    </div>
+    {% endif %}
+</div>
+<script>
+    function getPm(nc) {
+        var valeurs = {
+            0: 5,
+            1: 10,
+            2: 20,
+            3: 40,
+            4: 70,
+            5: 100,
+            6: 150,
+            7: 200,
+            8: 250,
+            9: 320,
+            10: 400,
+            11: 500,
+            12: 600,
+            13: 700,
+            14: 850,
+            15: 1000,
+            16: 1200,
+            17: 1400,
+            18: 1600,
+            19: 1800,
+        };
+        return valeurs[nc] || 2000;
+    }
+
+    $(document).ready(function(){
+        let player_nc = window.location.href.split('/')[5];;
+        let difficulty = 0;
+        let percent = 0;
+        let max_difficulty = getPm(player_nc);
+        let remove_btn = document.createElement("button");
+        remove_btn.classList.add("btn", "btn-danger", "btn-sm", "remove-btn");
+        remove_btn.textContent = "X";
+
+        $(".difficulty").text(difficulty+"/"+max_difficulty);
+        $(".table-row").each(function(){
+            let nc = $(this).find(".nc").text();
+            let pm = getPm(nc);
+            $(this).find(".add-btn").click(function(){
+                difficulty += pm;
+                percent = difficulty / max_difficulty * 100;
+                $(".difficulty").text(difficulty+"/"+max_difficulty);
+                $(".bar").css("background", "linear-gradient(90deg, lightskyblue "+ percent + "%, white " + percent + "%)");
+                if(difficulty > max_difficulty){
+                    $(".bar").css("background", "red");
+                }
+
+                let name = $(this).parent().parent().find(".name").text();
+                let list = $(".creature-list").find(".creature");
+                for (let i = 0; i < list.length; i++){
+                    if ($(list[i]).find(".creature-name").text() === name){
+                        let nb = $(list[i]).find(".creature-nb").text();
+                        let nb_int = parseInt(nb.split("x")[1]);
+                        nb_int++;
+                        $(list[i]).find(".creature-nb").text("x"+nb_int);
+                        return;
+                    }
+                }
+
+                let creature_li = document.createElement("li");
+                creature_li.classList.add("creature", "mb-1");
+                creature_li.setAttribute("data-pm", pm);
+
+                let creature_name = document.createElement("span");
+                creature_name.classList.add("creature-name");
+                creature_name.textContent = name;
+
+                let creature_nb = document.createElement("span");
+                creature_nb.classList.add("creature-nb", "ms-1");
+                creature_nb.textContent = "x1";
+
+                creature_li.append(remove_btn.cloneNode(true));
+                creature_li.append(creature_name);
+                creature_li.append(creature_nb);
+                $(".creature-list").append(creature_li);
+            });
+        });
+        $(".creature-list").on("click", ".remove-btn", function(){
+            let pm = $(this).parent().data("pm");
+            difficulty -= pm;
+            percent = difficulty / max_difficulty * 100;
+            $(".difficulty").text(difficulty+"/"+max_difficulty);
+            if(difficulty <= max_difficulty){
+                $(".bar").css("background", "linear-gradient(90deg, lightskyblue "+ percent + "%, white " + percent + "%)");
+            }
+
+            let nb = $(this).parent().find(".creature-nb").text();
+            if (nb === "x1"){
+                $(this).parent().remove();
+                return;
+            }
+            let nb_int = parseInt(nb.split("x")[1]);
+            nb_int--;
+            $(this).parent().find(".creature-nb").text("x"+nb_int);
+
+        });
+        $(".expand").click(function(){
+            if ($(".table-responsive").hasClass("d-none")){
+                $(".table-responsive").removeClass("d-none");
+                $(".expand").find(".material-symbols-outlined").text("expand_less");
+                return;
+            }
+            $(".table-responsive").addClass("d-none");
+            $(".expand").find(".material-symbols-outlined").text("expand_more");
+        });
+    });
+</script>
+{% endblock %}

@@ -19,3 +19,4 @@
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 /ToDO.md
+/templates/test.html

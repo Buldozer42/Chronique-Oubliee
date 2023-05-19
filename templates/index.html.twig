@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+{% include 'navbar.html.twig' %}
+<div class="container">
+    <h1> Chronique Oubliée </h1>
+    <diV class="container">
+        <p>
+            Bienvenue sur mon drs dédié à chronique oubliée ! <br>
+            Vous trouverez ici un regroupement de fonctionnalités pour vous aider à gérer vos parties.
+            Vous pouvez également les utiliser via la navbar en haut de la page.
+        </p>
+        <div class="row">
+            <div class="col-6 mb-4">
+                <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">Personnage :</h3>
+                    <p class="card-text">Les fonctionnalités pour gérer les personnages de vos joueurs :</p>
+                    <a href="{{ path('playerlist') }}" class="btn btn-primary">Consulter</a>
+                    <a href="{{ path('playerform') }}" class="btn btn-primary">Ajouter</a>
+                </div>
+                </div>
+            </div>
+            <div class="col-6 mb-4">
+                <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">Créature :</h3>
+                    <p class="card-text">Les fonctionnalités pour gérer les créatures :</p>
+                    <a href="{{ path('creaturelist') }}" class="btn btn-primary">Consulter</a>
+                    <a href="{{ path('creatureform') }}" class="btn btn-primary">Ajouter</a>
+                    <a href="{{ path('creature_assisted_creation') }}" class="btn btn-primary">Aide pour créer une créature équilibrée</a>
+                </div>
+                </div>
+            </div>
+            <div class="col-6 mb-4">
+                <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">Générateur de rencontre :</h3>
+                    <p class="card-text">Un générateur qui vous offre une interface pour gérer facilement les combats.</p>
+                    {# <div class="d-grid gap-2">
+                        <a href="{{ path('encountersgenerator') }}" class="btn btn-primary">Générateur de rencontre</a>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <a href="{{ path('encounter_create', {nc: -1}) }}" class="btn btn-primary">TODO</a>
+                    </div> #}
+                    <a href="{{ path('encountersgenerator') }}" class="btn btn-primary">Générateur de rencontre</a>
+                    <a href="{{ path('encounter_create', {nc: -1}) }}" class="btn btn-primary">Aide pour créer une rencontre équilibrée</a>
+                </div>
+                </div>
+            </div>
+            <div class="col-6 mb-4">
+                <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">Équipement :</h3>
+                    <p class="card-text">Un regroupement des équipements du livre de base et de différents suppléments.</p>
+                    <a href="{{ path('contact_weapon') }}" class="btn btn-primary">Armes aux contact</a>
+                    <a href="{{ path('distance_weapon') }}" class="btn btn-primary">Armes a distances</a>
+                    <a href="{{ path('armor') }}" class="btn btn-primary">Armures</a>
+                </div>
+                </div>
+            </div>
+        </div>
+    </diV>
+</div>
+{% endblock %}

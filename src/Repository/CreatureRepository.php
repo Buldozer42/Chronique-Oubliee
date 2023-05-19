@@ -91,6 +91,17 @@ class CreatureRepository extends ServiceEntityRepository
         ;
     }
 
+    public function findAllBellowNc(int $nc): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.nc <= :nc')
+            ->setParameter('nc', $nc)
+            ->orderBy('c.nc', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
 //    /**
 //     * @return Creature[] Returns an array of Creature objects
 //     */
