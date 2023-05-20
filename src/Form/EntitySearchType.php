@@ -6,6 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SearchType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class EntitySearchType extends AbstractType
 {
@@ -27,6 +28,14 @@ class EntitySearchType extends AbstractType
             'required' => false,
             'attr' => [
                 'id' => 'entity_search_entity_id',
+                'style' => 'display: none;'
+            ]
+        ]);
+
+        $builder->add('entity_type', TextType::class, [
+            'required' => false,
+            'attr' => [
+                'id' => 'entity_search_entity_type',
                 'style' => 'display: none;'
             ]
         ]);

@@ -8,6 +8,7 @@
 
         {{ form_widget(form.search) }}
         {{ form_widget(form.entity_id) }}
+        {{ form_widget(form.entity_type) }}     
         
         {{ form_rest(form) }}
             <button type="submit" class="btn btn-primary mx-2">Ajouter</button>
@@ -207,6 +208,7 @@
                 event.preventDefault();
                 $("#entity_search_search").val(ui.item.label);
                 $("#entity_search_entity_id").val(ui.item.id);
+                $("#entity_search_entity_type").val(ui.item.type);
             },
         }).autocomplete("instance")._renderItem = function(ul, item) {
             return $("<li>")

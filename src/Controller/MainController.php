@@ -153,9 +153,13 @@ class MainController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $encounter = $encounterRepository->getFirst();
             $entityId = $form->get('entity_id')->getData();
-            $player = $playerRepository->find($entityId);
-            if ($player !== null){
-                $entity = clone $player;
+            $entityType = $form->get('entity_type')->getData();
+            if ($entityType === 'Player')
+            {
+                $player = $playerRepository->find($entityId);
+                if ($player !== null){
+                    $entity = clone $player;
+                }
             }
             else{
                 $creature = $creatureRepository->find($entityId);
@@ -239,15 +243,19 @@ class MainController extends AbstractController
 
         $results = [];
         foreach ($entitys as $entity) {
+            $class = get_class($entity);
+            $type = explode("\\", $class)[2];
             $results[] = [
                 'id' => $entity->getId(),
                 'label' => $entity->getName(),
+                'type' => $type
             ];
         }
         if (empty($results)) {
             $results[] = [
                 'id' => 0,
                 'label' => 'Aucun résultat',
+                'type' => 'none',
             ];
         }
 
