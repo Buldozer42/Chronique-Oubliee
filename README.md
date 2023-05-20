@@ -27,6 +27,7 @@ Le projet est actuellement en cours de développement. Les fonctionnalités suiv
   * Gestion des règles : accès rapide aux règles du jeu, aux références et aux ressources utiles pour le MJ.
   * Accès rapide aux aides de jeu : accès rapide aux aides de jeu, aux références et aux ressources utiles pour le MJ.
   * Accès à des playlists musicales : accès à des playlists musicales pour accompagner les sessions de jeu pendant les combats, les phases calme et les tavernes.
+  * Et bien plus encore !
 # Installation
 
 ## Pré requis

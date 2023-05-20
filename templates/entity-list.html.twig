@@ -114,6 +114,9 @@
           <td>
             <a href="{{ path(path ~ 'edit', {id: entity.id}) }}"> <button class="btn btn-primary">Edit</button></a>
             <a href="{{ path(path ~ 'remove', {id: entity.id}) }}"><button class="btn btn-danger">Delete</button></a>
+            {% if path == 'player' %}
+              <a href="{{ path('player_lvl_up', {id: entity.id}) }}"><button class="btn btn-success">Level Up</button></a>
+            {% endif %}
           </td>
         </tr>
         {% endfor %}

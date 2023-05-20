@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+{% include 'navbar.html.twig' %}
+<div class="container">
+    <h1> Niveaux supérieurs </h1>
+    <p> Vous aller faire gagner un niveau à {{player.name}}, qui est actuellement niveau {{player.level}}. </p>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">
+                {% if label == 'success' %}
+                    <div class="alert alert-success" role="alert">
+                {% elseif label == 'error' %}
+                    <div class="alert alert-danger" role="alert">
+                {% elseif label == 'info' %}
+                    <div class="alert alert-primary" role="alert">
+                {% else %}
+                    <div class="alert alert-light" role="alert">
+                {% endif %}
+                {{ message }}
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <p> 
+        {{player.name}} à {{player.getMaxHp}} pv max, sont dé de vie est un d{{player.getDiceLife}} 
+        et son mod de constitution est de {{player.getModCon}}.
+    </p>
+    <p> Entrez son nouveau nombre de pv ou cliquez sur le bouton pour laisser la magie faire. </p>
+    <div class="d-flex">
+        <div class="col-4">
+            {{ form_start(form)}}
+            {{ form_label(form.new_pv) }}
+            {{ form_widget(form.new_pv, {'attr': {'min': player.getMaxHp, 'max': player.getMaxHp + player.getDiceLife + player.getModCon}}) }}
+            {{ form_rest(form) }}
+        </div>
+        <div class="d-flex align-items-end">
+            <button type="button" class="btn btn-primary ms-2" id="auto" style="height: 2.5rem;">Auto</button>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Envoyer</button>
+    {{ form_end(form) }}
+</div>
+<script>
+    $(document).ready(function(){
+        $('#auto').click(function(){
+            var max_hp = {{player.getMaxHp}};
+            var dice_life = {{player.getDiceLife}};
+            var mod_con = {{player.getModCon}};
+            var new_hp = max_hp + (Math.floor(Math.random() * dice_life) + 1) + mod_con;
+            $('#level_up_form_new_pv').val(new_hp);
+        });
+    });
+</script>
+{% endblock %}

@@ -20,6 +20,7 @@ use App\Form\Type\CreatureFormType;
 use App\Form\EntitySearchType;
 use App\Form\Type\NumberType;
 use App\Form\ManageHpType;
+use App\Form\LevelUpForm;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -27,6 +28,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class MainController extends AbstractController
 {
+    // Main page
+    //-----------------------------------------------------------------------------------//
     /**
      * @Route("/", name="index")
      */
@@ -34,7 +37,10 @@ class MainController extends AbstractController
     {
         return $this->render('index.html.twig');
     }
+    //-----------------------------------------------------------------------------------//
 
+    // Player
+    //-----------------------------------------------------------------------------------//
     /**
      * @Route("/player", name="playerlist")
      */
@@ -58,6 +64,220 @@ class MainController extends AbstractController
             'form' => $form->createView()
         ]);
     }
+
+     /**
+     * @Route("/player/{by}/{asc}", name="playerlistoredered")
+     */
+    public function playerlistOrdered(Request $request, PlayerRepository $playerRepository): Response
+    {
+        $players = $playerRepository->findAllOrderBy($request->get('by'), $request->get('asc'));
+        return $this->playerlist($request, $playerRepository, $players);
+    }
+
+    /**
+     * @Route("/playersheet/{id}", name="playersheet")
+     */
+    public function playerSheet(Player $player): Response
+    {
+        return $this->render('player/player-sheet.html.twig', [
+            'player' => $player,
+            'weapons' => json_decode($player->getWeapons(), true),
+            'nbInventoryLine' => ceil(count($player->getInventory())/5),
+            'money' => json_decode($player->getMoney(), true),
+            'skills' => json_decode($player->getSkills(), true),
+        ]);
+    }
+
+    public function playerFormBase(FormInterface $form,Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger)
+    {
+        $form->handleRequest($request);
+        // $form->addError(new FormError('This is a global error'));
+        if ($form->isSubmitted() && $form->isValid()) {
+            $error = false;
+            $player = $form->getData();
+            $player->setAttCon($player->getModFo() + $player->getLevel());
+            $player->setAttDis($player->getModDex() + $player->getLevel());
+            $player->setAttMag($player->getModMag() + $player->getLevel());
+            $player->setInit($player->getDex() + $form->get('bonus_init')->getData());
+            $player->setDef(10 + $player->getDef() + $player->getModDex());
+
+            $weapons = [];
+            for ($i = 1; $i <= 3; $i++) {
+                $weapons["weapon$i"] = [
+                    "name" => $form->get("weapon{$i}_name")->getData(),
+                    "att" => $form->get("weapon{$i}_att")->getData(),
+                    "dm" => $form->get("weapon{$i}_dm")->getData(),
+                    "special" => $form->get("weapon{$i}_special")->getData()
+                ];
+            }
+
+            $player->setWeapons(json_encode($weapons));
+
+            $money = ["po" => $form->get('po')->getData(),"pa" => $form->get('pa')->getData()];
+            $player->setMoney(json_encode($money));
+
+            $skills = [];
+            foreach (range(1, 6) as $i) {
+                $comp = [];
+                for ($j = 1; $j <= 5; $j++) {
+                    $comp["comp$j"] = [
+                        "name" => $form->get("path{$i}_comp{$j}_name")->getData(),
+                        "desc" => $form->get("path{$i}_comp{$j}_desc")->getData(),
+                    ];
+                }
+                $skills["path$i"] = [
+                    "name" => $form->get("path{$i}_name")->getData(),
+                    "comp" => $comp,
+                ];
+            }
+            $player->setSkills(json_encode($skills));
+
+            if (! $player->isModMag()){
+                if ($player->getMaxPm() > 0)
+                {
+                    $this->addFlash('error', 'Le personnage ne peut pas avoir de points de mana s\'il n\'as pas de Mod. de Magie !');
+                    $error = true;
+                }
+            }
+
+            if ($player->getHp() > $player->getMaxHp())
+            {
+                $this->addFlash('error', 'Les points de vie actuels ne peuvent pas être supérieurs aux points de vie maximum !');
+                $error = true;
+            }
+            if ($player->getPc() > $player->getMaxPc())
+            {
+                $this->addFlash('error', 'Les points de chance actuels ne peuvent pas être supérieurs aux points de chance maximum !');
+                $error = true;
+            }
+            if ($player->getPr() > $player->getMaxPr())
+            {
+                $this->addFlash('error', 'Les points de récupération actuels ne peuvent pas être supérieurs aux points de récupération maximum !');
+                $error = true;
+            }
+            if ($player->getPm() > $player->getMaxPm())
+            {
+                $this->addFlash('error', 'Les points de mana actuels ne peuvent pas être supérieurs aux points de mana maximum !');
+                $error = true;
+            }
+
+            if ($error)
+            {
+                return $this->render('player/player-form.html.twig', [
+                    'form' => $form->createView()
+                ]);
+            }
+
+            $entityManager->persist($player);
+            $entityManager->flush();
+            $this->addFlash('success', 'Personnage ajouté ou mis à jour !');
+            return $this->redirectToRoute('playerlist');
+        }
+        else if ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Personnage non ajouté ! Le formulaire contient des erreurs !');
+        }
+        else {
+            $this->addFlash('info', 'Veuillez remplir le formulaire !');
+        }
+
+        return $this->render('player/player-form.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/playerform", name="playerform")
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function addPlayer(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger)
+    {
+        $form = $this->createForm(PlayerFormType::class, new Player());
+        return $this->playerFormBase($form, $request, $entityManager, $slugger);
+    }
+    
+     /**
+     * @Route("/playeredit/{id}", name="playeredit")
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function editPlayer(Player $player, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger)
+    {
+
+        $form = $this->createForm(PlayerFormType::class, $player);
+        $form->get('bonus_init')->setData($player->getInit() - $player->getDex());
+        $form->get('def')->setData($player->getDef() - 10 - $player->getModDex());
+
+        $money = json_decode($player->getMoney(), true);
+        $form->get('po')->setData($money['po']);
+        $form->get('pa')->setData($money['pa']);
+
+        $weapons = json_decode($player->getWeapons(), true);
+        for ($i=1; $i <4;){
+            $form->get('weapon'.$i.'_name')->setData($weapons['weapon'.$i]['name']);
+            $form->get('weapon'.$i.'_att')->setData($weapons['weapon'.$i]['att']);
+            $form->get('weapon'.$i.'_dm')->setData($weapons['weapon'.$i]['dm']);
+            $form->get('weapon'.$i.'_special')->setData($weapons['weapon'.$i]['special']);
+            $i++;
+        }
+
+        $skills = json_decode($player->getSkills(), true);
+        for ($i = 1; $i <= 6; $i++) {
+            $form->get("path{$i}_name")->setData($skills["path$i"]["name"]);
+            for ($j = 1; $j <= 5; $j++)
+            {
+                $form->get("path{$i}_comp{$j}_name")->setData($skills["path$i"]["comp"]["comp$j"]["name"]);
+                $form->get("path{$i}_comp{$j}_desc")->setData($skills["path$i"]["comp"]["comp$j"]["desc"]);
+            }
+        }
+
+        return $this->playerFormBase($form, $request, $entityManager, $slugger);
+    }
+    
+    /**
+     * @Route("/playerremove/{id}", name="playerremove")
+     */
+    public function removePlayer(Player $player, EntityManagerInterface $entityManager) : RedirectResponse
+    {
+        $entityManager->remove($player);
+        $entityManager->flush();
+        $this->addFlash('success', 'Player was removed !');
+        return $this->redirectToRoute('playerlist');
+    }
+
+    /**
+     * @Route("/player_lvl_up/{id}", name="player_lvl_up")
+     */
+    public function levelUpPlayer(Player $player, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugge)
+    {
+        $form = $this->createForm(LevelUpForm::class);
+        $form->get('new_pv')->setData($player->getMaxHp());
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()){
+            $player->setLevel($player->getLevel() + 1);
+            $player->setMaxHp($form->get('new_pv')->getData());
+            $entityManager->persist($player);
+            $entityManager->flush();
+            $this->addFlash('success', 'Niveau du personnage augmenté !');
+            return $this->redirectToRoute('playerlist');
+        }
+        else if ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Niveau du personnage non augmenté ! Le formulaire contient des erreurs !');
+        }
+
+        return $this->render('player/player-lvl-up.html.twig', [
+            'player' => $player,
+            'form' => $form->createView()
+        ]);
+    }
+    //-----------------------------------------------------------------------------------//
+
+    // Creature
+    //-----------------------------------------------------------------------------------//
     /**
      * @Route("/creature", name="creaturelist")
      */
@@ -96,15 +316,6 @@ class MainController extends AbstractController
         return $this->creaturelist($request, $creatureRepository, $creatures, $family);
     }
 
-     /**
-     * @Route("/player/{by}/{asc}", name="playerlistoredered")
-     */
-    public function playerlistOrdered(Request $request, PlayerRepository $playerRepository): Response
-    {
-        $players = $playerRepository->findAllOrderBy($request->get('by'), $request->get('asc'));
-        return $this->playerlist($request, $playerRepository, $players);
-    }
-
     /**
      * @Route("/creature/{by}/{asc}/{family}", name="creaturelistoredered")
      */
@@ -117,20 +328,6 @@ class MainController extends AbstractController
         $creatures = $creatureRepository->findAllOrderBy($request->get('by'), $request->get('asc'));
         return $this->creaturelist($request, $creatureRepository, $creatures, null);
     }
-
-    /**
-     * @Route("/playersheet/{id}", name="playersheet")
-     */
-    public function playerSheet(Player $player): Response
-    {
-        return $this->render('player/player-sheet.html.twig', [
-            'player' => $player,
-            'weapons' => json_decode($player->getWeapons(), true),
-            'nbInventoryLine' => ceil(count($player->getInventory())/5),
-            'money' => json_decode($player->getMoney(), true),
-            'skills' => json_decode($player->getSkills(), true),
-        ]);
-    }
     /**
      * @Route("/creaturesheet/{id}", name="creaturesheet")
      */
@@ -142,6 +339,108 @@ class MainController extends AbstractController
         ]);
     }
 
+    public function creatureFormBase(FormInterface $form,Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, string $link)
+    {
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $creature = $form->getData();
+            $creature->setHp($creature->getMaxHp());
+            $skills = [];
+            foreach (range(1, 6) as $i) {
+                $comp = [];
+                for ($j = 1; $j <= 5; $j++) {
+                    $comp["comp$j"] = [
+                        "name" => $form->get("path{$i}_comp{$j}_name")->getData(),
+                        "desc" => $form->get("path{$i}_comp{$j}_desc")->getData(),
+                    ];
+                }
+                $skills["path$i"] = [
+                    "name" => $form->get("path{$i}_name")->getData(),
+                    "comp" => $comp,
+                ];
+            }
+            $creature->setSkills(json_encode($skills));
+
+            $entityManager->persist($creature);
+            $entityManager->flush();
+            $this->addFlash('success', 'Créature ajouté ou mis à jour !');
+            return $this->redirectToRoute('creaturelist');
+        }
+        else if ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Créature non ajouté !');
+            $this->addFlash('error', $form->getErrors());
+        }
+        else {
+            $this->addFlash('info', 'Veuillez remplir le formulaire !');
+        }
+
+        return $this->render($link, [
+            'form' => $form->createView()
+        ]);
+    }
+
+    
+    /**
+     * @Route("/creatureform", name="creatureform")
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function addCreature(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger)
+    {
+        $form = $this->createForm(CreatureFormType::class, new Creature());
+        return $this->creatureFormBase($form, $request, $entityManager, $slugger, 'creature/creature-form.html.twig');
+    }
+    
+     /**
+     * @Route("/creatureedit/{id}", name="creatureedit")
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function editCreature(Creature $creature, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger)
+    {
+
+        $form = $this->createForm(CreatureFormType::class, $creature);
+
+        $skills = json_decode($creature->getSkills(), true);
+        for ($i = 1; $i <= 6; $i++) {
+            $form->get("path{$i}_name")->setData($skills["path$i"]["name"]);
+            for ($j = 1; $j <= 5; $j++)
+            {
+                $form->get("path{$i}_comp{$j}_name")->setData($skills["path$i"]["comp"]["comp$j"]["name"]);
+                $form->get("path{$i}_comp{$j}_desc")->setData($skills["path$i"]["comp"]["comp$j"]["desc"]);
+            }
+        }
+
+        return $this->creatureFormBase($form, $request, $entityManager, $slugger, 'creature/creature-form.html.twig');
+    }
+
+    /**
+     * @Route("/creatureremove/{id}", name="creatureremove")
+     */
+    public function removeCreature(Creature $creature, EntityManagerInterface $entityManager) : RedirectResponse
+    {
+        $entityManager->remove($creature);
+        $entityManager->flush();
+        $this->addFlash('success', 'Creature was removed !');
+        return $this->redirectToRoute('creaturelist');
+    }
+
+    /**
+     * @Route("/creature-assisted-creation", name="creature_assisted_creation")
+     */
+    public function creatureAssistedCreation(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger) : Response
+    {
+        $form = $this->createForm(CreatureFormType::class, new Creature());
+        return $this->creatureFormBase($form, $request, $entityManager, $slugger, 'creature/creature-assisted-creation.html.twig');
+    }
+    //-----------------------------------------------------------------------------------//
+
+    // Encounter
+    //-----------------------------------------------------------------------------------//
     /**
      * @Route("/encountersgenerator", name="encountersgenerator")
      */
@@ -363,261 +662,27 @@ class MainController extends AbstractController
         return $this->redirectToRoute('encountersgenerator');
     }
 
-    public function playerFormBase(FormInterface $form,Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger)
+     /**
+     * @Route("/encounter/create/{nc}", name="encounter_create")
+     */
+    public function createEncounter(Request $request, CreatureRepository $createuRepository) : Response
     {
+        $form = $this->createForm(NumberType::class);
         $form->handleRequest($request);
-        // $form->addError(new FormError('This is a global error'));
-        if ($form->isSubmitted() && $form->isValid()) {
-            $error = false;
-            $player = $form->getData();
-            $player->setAttCon($player->getModFo() + $player->getLevel());
-            $player->setAttDis($player->getModDex() + $player->getLevel());
-            $player->setAttMag($player->getModMag() + $player->getLevel());
-            $player->setInit($player->getDex() + $form->get('bonus_init')->getData());
-            $player->setDef(10 + $player->getDef() + $player->getModDex());
-
-            $weapons = [];
-            for ($i = 1; $i <= 3; $i++) {
-                $weapons["weapon$i"] = [
-                    "name" => $form->get("weapon{$i}_name")->getData(),
-                    "att" => $form->get("weapon{$i}_att")->getData(),
-                    "dm" => $form->get("weapon{$i}_dm")->getData(),
-                    "special" => $form->get("weapon{$i}_special")->getData()
-                ];
-            }
-
-            $player->setWeapons(json_encode($weapons));
-
-            $money = ["po" => $form->get('po')->getData(),"pa" => $form->get('pa')->getData()];
-            $player->setMoney(json_encode($money));
-
-            $skills = [];
-            foreach (range(1, 6) as $i) {
-                $comp = [];
-                for ($j = 1; $j <= 5; $j++) {
-                    $comp["comp$j"] = [
-                        "name" => $form->get("path{$i}_comp{$j}_name")->getData(),
-                        "desc" => $form->get("path{$i}_comp{$j}_desc")->getData(),
-                    ];
-                }
-                $skills["path$i"] = [
-                    "name" => $form->get("path{$i}_name")->getData(),
-                    "comp" => $comp,
-                ];
-            }
-            $player->setSkills(json_encode($skills));
-
-            if (! $player->isModMag()){
-                if ($player->getMaxPm() > 0)
-                {
-                    $this->addFlash('error', 'Le personnage ne peut pas avoir de points de mana s\'il n\'as pas de Mod. de Magie !');
-                    $error = true;
-                }
-            }
-
-            if ($player->getHp() > $player->getMaxHp())
-            {
-                $this->addFlash('error', 'Les points de vie actuels ne peuvent pas être supérieurs aux points de vie maximum !');
-                $error = true;
-            }
-            if ($player->getPc() > $player->getMaxPc())
-            {
-                $this->addFlash('error', 'Les points de chance actuels ne peuvent pas être supérieurs aux points de chance maximum !');
-                $error = true;
-            }
-            if ($player->getPr() > $player->getMaxPr())
-            {
-                $this->addFlash('error', 'Les points de récupération actuels ne peuvent pas être supérieurs aux points de récupération maximum !');
-                $error = true;
-            }
-            if ($player->getPm() > $player->getMaxPm())
-            {
-                $this->addFlash('error', 'Les points de mana actuels ne peuvent pas être supérieurs aux points de mana maximum !');
-                $error = true;
-            }
-
-            if ($error)
-            {
-                return $this->render('player/player-form.html.twig', [
-                    'form' => $form->createView()
-                ]);
-            }
-
-            $entityManager->persist($player);
-            $entityManager->flush();
-            $this->addFlash('success', 'Personnage ajouté ou mis à jour !');
-            return $this->redirectToRoute('playerlist');
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            return $this->redirectToRoute('encounter_create', ['nc' => $form->getData()['number']]);
         }
-        else if ($form->isSubmitted() && !$form->isValid()) {
-            $this->addFlash('error', 'Personnage non ajouté ! Le formulaire contient des erreurs !');
-        }
-        else {
-            $this->addFlash('info', 'Veuillez remplir le formulaire !');
-        }
-
-        return $this->render('player/player-form.html.twig', [
-            'form' => $form->createView()
+        $creatures = $createuRepository->findAllBellowNc($request->get('nc'));
+        return $this->render('encounter/encounter-create.html.twig', [
+            'creatures' => $creatures,
+            'form' => $form->createView(),
         ]);
     }
-    public function creatureFormBase(FormInterface $form,Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, string $link)
-    {
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $creature = $form->getData();
-            $creature->setHp($creature->getMaxHp());
-            $skills = [];
-            foreach (range(1, 6) as $i) {
-                $comp = [];
-                for ($j = 1; $j <= 5; $j++) {
-                    $comp["comp$j"] = [
-                        "name" => $form->get("path{$i}_comp{$j}_name")->getData(),
-                        "desc" => $form->get("path{$i}_comp{$j}_desc")->getData(),
-                    ];
-                }
-                $skills["path$i"] = [
-                    "name" => $form->get("path{$i}_name")->getData(),
-                    "comp" => $comp,
-                ];
-            }
-            $creature->setSkills(json_encode($skills));
+    //-----------------------------------------------------------------------------------//
 
-            $entityManager->persist($creature);
-            $entityManager->flush();
-            $this->addFlash('success', 'Créature ajouté ou mis à jour !');
-            return $this->redirectToRoute('creaturelist');
-        }
-        else if ($form->isSubmitted() && !$form->isValid()) {
-            $this->addFlash('error', 'Créature non ajouté !');
-            $this->addFlash('error', $form->getErrors());
-        }
-        else {
-            $this->addFlash('info', 'Veuillez remplir le formulaire !');
-        }
-
-        return $this->render($link, [
-            'form' => $form->createView()
-        ]);
-    }
-
-    /**
-     * @Route("/playerform", name="playerform")
-     *
-     * @param Request $request
-     *
-     * @return Response
-     */
-    public function addPlayer(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger)
-    {
-        $form = $this->createForm(PlayerFormType::class, new Player());
-        return $this->playerFormBase($form, $request, $entityManager, $slugger);
-    }
-    /**
-     * @Route("/creatureform", name="creatureform")
-     *
-     * @param Request $request
-     *
-     * @return Response
-     */
-    public function addCreature(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger)
-    {
-        $form = $this->createForm(CreatureFormType::class, new Creature());
-        return $this->creatureFormBase($form, $request, $entityManager, $slugger, 'creature/creature-form.html.twig');
-    }
-
-     /**
-     * @Route("/playeredit/{id}", name="playeredit")
-     *
-     * @param Request $request
-     *
-     * @return Response
-     */
-    public function editPlayer(Player $player, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger)
-    {
-
-        $form = $this->createForm(PlayerFormType::class, $player);
-        $form->get('bonus_init')->setData($player->getInit() - $player->getDex());
-        $form->get('def')->setData($player->getDef() - 10 - $player->getModDex());
-
-        $money = json_decode($player->getMoney(), true);
-        $form->get('po')->setData($money['po']);
-        $form->get('pa')->setData($money['pa']);
-
-        $weapons = json_decode($player->getWeapons(), true);
-        for ($i=1; $i <4;){
-            $form->get('weapon'.$i.'_name')->setData($weapons['weapon'.$i]['name']);
-            $form->get('weapon'.$i.'_att')->setData($weapons['weapon'.$i]['att']);
-            $form->get('weapon'.$i.'_dm')->setData($weapons['weapon'.$i]['dm']);
-            $form->get('weapon'.$i.'_special')->setData($weapons['weapon'.$i]['special']);
-            $i++;
-        }
-
-        $skills = json_decode($player->getSkills(), true);
-        for ($i = 1; $i <= 6; $i++) {
-            $form->get("path{$i}_name")->setData($skills["path$i"]["name"]);
-            for ($j = 1; $j <= 5; $j++)
-            {
-                $form->get("path{$i}_comp{$j}_name")->setData($skills["path$i"]["comp"]["comp$j"]["name"]);
-                $form->get("path{$i}_comp{$j}_desc")->setData($skills["path$i"]["comp"]["comp$j"]["desc"]);
-            }
-        }
-
-        return $this->playerFormBase($form, $request, $entityManager, $slugger);
-    }
-     /**
-     * @Route("/creatureedit/{id}", name="creatureedit")
-     *
-     * @param Request $request
-     *
-     * @return Response
-     */
-    public function editCreature(Creature $creature, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger)
-    {
-
-        $form = $this->createForm(CreatureFormType::class, $creature);
-
-        $skills = json_decode($creature->getSkills(), true);
-        for ($i = 1; $i <= 6; $i++) {
-            $form->get("path{$i}_name")->setData($skills["path$i"]["name"]);
-            for ($j = 1; $j <= 5; $j++)
-            {
-                $form->get("path{$i}_comp{$j}_name")->setData($skills["path$i"]["comp"]["comp$j"]["name"]);
-                $form->get("path{$i}_comp{$j}_desc")->setData($skills["path$i"]["comp"]["comp$j"]["desc"]);
-            }
-        }
-
-        return $this->creatureFormBase($form, $request, $entityManager, $slugger, 'creature/creature-form.html.twig');
-    }
-
-    /**
-     * @Route("/playerremove/{id}", name="playerremove")
-     */
-    public function removePlayer(Player $player, EntityManagerInterface $entityManager) : RedirectResponse
-    {
-        $entityManager->remove($player);
-        $entityManager->flush();
-        $this->addFlash('success', 'Player was removed !');
-        return $this->redirectToRoute('playerlist');
-    }
-    /**
-     * @Route("/creatureremove/{id}", name="creatureremove")
-     */
-    public function removeCreature(Creature $creature, EntityManagerInterface $entityManager) : RedirectResponse
-    {
-        $entityManager->remove($creature);
-        $entityManager->flush();
-        $this->addFlash('success', 'Creature was removed !');
-        return $this->redirectToRoute('creaturelist');
-    }
-
-    /**
-     * @Route("/creature-assisted-creation", name="creature_assisted_creation")
-     */
-    public function creatureAssistedCreation(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger) : Response
-    {
-        $form = $this->createForm(CreatureFormType::class, new Creature());
-        return $this->creatureFormBase($form, $request, $entityManager, $slugger, 'creature/creature-assisted-creation.html.twig');
-    }
-
+    // Equipement
+    //-----------------------------------------------------------------------------------//
     /**
      * @Route("/equipment/contact-weapon", name="contact_weapon")
      */
@@ -637,22 +702,5 @@ class MainController extends AbstractController
     public function armor(){
         return $this->render('equipment/armor.html.twig');
     }
-
-    /**
-     * @Route("/encounter/create/{nc}", name="encounter_create")
-     */
-    public function createEncounter(Request $request, CreatureRepository $createuRepository) : Response
-    {
-        $form = $this->createForm(NumberType::class);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid())
-        {
-            return $this->redirectToRoute('encounter_create', ['nc' => $form->getData()['number']]);
-        }
-        $creatures = $createuRepository->findAllBellowNc($request->get('nc'));
-        return $this->render('encounter/encounter-create.html.twig', [
-            'creatures' => $creatures,
-            'form' => $form->createView(),
-        ]);
-    }
+    //-----------------------------------------------------------------------------------//
 }
