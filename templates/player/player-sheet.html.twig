@@ -11,7 +11,7 @@
         <h1>Fiche de personage</h1>
     </div>
     <div class="d-flex align-items-center me-4">
-        <a href="{{ path('playeredit', {id: player.id}) }}"> <button class="btn btn-sm btn-outline-secondary">Edit</button></a>
+        <a href="{{ path('playeredit', {id: player.id}) }}" id="editBtn"> <button class="btn btn-sm btn-outline-secondary">Edit</button></a>
         <h2 class="mx-2">Personage : {{ player.name }}</h2>
     </div>
     <div>

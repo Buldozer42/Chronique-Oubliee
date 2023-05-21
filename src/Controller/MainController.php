@@ -256,10 +256,35 @@ class MainController extends AbstractController
     {
         $form = $this->createForm(LevelUpForm::class);
         $form->get('new_pv')->setData($player->getMaxHp());
+        $skills = json_decode($player->getSkills(), true);
+        for ($i = 1; $i <= 6; $i++) {
+            $form->get("path{$i}_name")->setData($skills["path$i"]["name"]);
+            for ($j = 1; $j <= 5; $j++)
+            {
+                $form->get("path{$i}_comp{$j}_name")->setData($skills["path$i"]["comp"]["comp$j"]["name"]);
+                $form->get("path{$i}_comp{$j}_desc")->setData($skills["path$i"]["comp"]["comp$j"]["desc"]);
+            }
+        }
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()){
             $player->setLevel($player->getLevel() + 1);
             $player->setMaxHp($form->get('new_pv')->getData());
+            $skills = [];
+            foreach (range(1, 6) as $i) {
+                $comp = [];
+                for ($j = 1; $j <= 5; $j++) {
+                    $comp["comp$j"] = [
+                        "name" => $form->get("path{$i}_comp{$j}_name")->getData(),
+                        "desc" => $form->get("path{$i}_comp{$j}_desc")->getData(),
+                    ];
+                }
+                $skills["path$i"] = [
+                    "name" => $form->get("path{$i}_name")->getData(),
+                    "comp" => $comp,
+                ];
+            }
+            $player->setSkills(json_encode($skills));
+
             $entityManager->persist($player);
             $entityManager->flush();
             $this->addFlash('success', 'Niveau du personnage augmenté !');
@@ -508,6 +533,7 @@ class MainController extends AbstractController
         else{
             $encounter = $encounterRepository->getFirst();
         }
+
         return $this->render('encounter/encounters-generator.html.twig', [
             'form' => $form->createView(),
             'hpForm' => $hpForm->createView(),
@@ -677,8 +703,16 @@ class MainController extends AbstractController
         return $this->render('encounter/encounter-create.html.twig', [
             'creatures' => $creatures,
             'form' => $form->createView(),
+            'nc' => $request->get('nc')
         ]);
     }
+
+    // public function playerlistOrdered(Request $request, PlayerRepository $playerRepository): Response
+    // {
+    //     $players = $playerRepository->findAllOrderBy($request->get('by'), $request->get('asc'));
+    //     return $this->playerlist($request, $playerRepository, $players);
+    // }
+
     //-----------------------------------------------------------------------------------//
 
     // Equipement

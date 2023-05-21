@@ -22,8 +22,9 @@
         {% endfor %}
     {% endfor %}
     <p> 
-        {{player.name}} à {{player.getMaxHp}} pv max, sont dé de vie est un d{{player.getDiceLife}} 
-        et son mod de constitution est de {{player.getModCon}}.
+        {{player.name}} à <strong>{{player.getMaxHp}} pv</strong> max, 
+        sont dé de vie est un <strong>d{{player.getDiceLife}}</strong>
+        et son mod de constitution est de <strong>{{player.getModCon}}</strong>.
     </p>
     <p> Entrez son nouveau nombre de pv ou cliquez sur le bouton pour laisser la magie faire. </p>
     <div class="d-flex">
@@ -31,12 +32,46 @@
             {{ form_start(form)}}
             {{ form_label(form.new_pv) }}
             {{ form_widget(form.new_pv, {'attr': {'min': player.getMaxHp, 'max': player.getMaxHp + player.getDiceLife + player.getModCon}}) }}
-            {{ form_rest(form) }}
         </div>
         <div class="d-flex align-items-end">
             <button type="button" class="btn btn-primary ms-2" id="auto" style="height: 2.5rem;">Auto</button>
         </div>
     </div>
+    {# <h3> Voie </h3> #}
+    <div class="mt-2">
+        <span> Mettez, désormais, à jour ces voies. Pour rappel, la voie 6 corespond à la voie de prestige </span>
+        {% for i in range(1, 6) %}
+            <div class="form-check mt-4">
+                <input class="{{'form-check-input path' ~ i ~ 'checkboxdisabled'}}" type="checkbox" value="" 
+                    id={{ 'path' ~ i ~'checkbox' }}>
+                <label class="form-check-label" for="">
+                    Voie non aquise
+                </label>
+            </div>
+            <div class="form-group">
+                {{ form_label(attribute(form, 'path' ~ i ~ '_name')) }}
+                {{ form_widget(attribute(form, 'path' ~ i ~ '_name')) }}
+            </div>
+            {% for y in range(1, 5) %}
+                <div class="form-check mt-2">
+                    <input class="{{'form-check-input path' ~ i ~ 'checkboxdisabled'}}" type="checkbox" value="" 
+                        id={{ 'path' ~ i ~'comp' ~ y ~ 'checkbox' }}>
+                    <label class="form-check-label" for="">
+                        Cappacité non aquise
+                    </label>
+                </div>
+                <div class="form-group">
+                    {{ form_label(attribute(form, 'path' ~ i ~ '_comp' ~ y ~ '_name')) }}
+                    {{ form_widget(attribute(form, 'path' ~ i ~ '_comp' ~ y ~ '_name')) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(attribute(form, 'path' ~ i ~ '_comp' ~ y ~ '_desc')) }}
+                    {{ form_widget(attribute(form, 'path' ~ i ~ '_comp' ~ y ~ '_desc')) }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    {{ form_rest(form) }}
     <button type="submit" class="btn btn-primary mt-2">Envoyer</button>
     {{ form_end(form) }}
 </div>
@@ -49,6 +84,112 @@
             var new_hp = max_hp + (Math.floor(Math.random() * dice_life) + 1) + mod_con;
             $('#level_up_form_new_pv').val(new_hp);
         });
+        $("#path1checkbox").parent().removeClass("mt-4");
+        $("#path1checkbox").parent().addClass("mt-2");
     });
+
+    for (let i = 1; i <=6 ; i++) {
+        const pathcheckbox = document.querySelector('#path' + i + 'checkbox');
+        pathcheckbox.addEventListener('change', function() {
+            const isChecked = this.checked;
+            if (isChecked) {
+                if (i != 6) {
+                    for (let x = i; x <= 5; x++){
+                        const pathdisabled = document.querySelectorAll('.path' + x + 'disabled');
+                        pathdisabled.forEach(function(value, index) {
+                            value.value = 'Pas acquise';
+                            value.disabled = true;
+                        });
+
+                        const pathcheckboxdisabled = document.querySelectorAll('.path' + x + 'checkboxdisabled');
+                        pathcheckboxdisabled.forEach(function(value, index) {
+                            value.checked = true;
+                        });
+                    }
+                } else {
+                    const pathdisabled = document.querySelectorAll('.path6disabled');
+                    pathdisabled.forEach(function(value, index) {
+                        value.value = 'Pas acquise';
+                        value.disabled = true;
+                    });
+
+                    const pathcheckboxdisabled = document.querySelectorAll('.path6checkboxdisabled');
+                    pathcheckboxdisabled.forEach(function(value, index) {
+                        value.checked = true;
+                    });
+                }
+            } else {
+                if (i != 6){
+                    for (let x = i; x >= 1; x--){
+                        const pathdisabled = document.querySelectorAll('.path' + x + 'disabled');
+                        pathdisabled.forEach(function(value, index) {
+                            value.value = '';
+                            value.disabled = false;
+                        });
+
+                        const pathcheckboxdisabled = document.querySelectorAll('.path' + x + 'checkboxdisabled');
+                        pathcheckboxdisabled.forEach(function(value, index) {
+                            value.checked = false;
+                        });
+                    }
+                } else {
+                    const pathdisabled = document.querySelectorAll('.path6disabled');
+                    pathdisabled.forEach(function(value, index) {
+                        value.value = '';
+                        value.disabled = false;
+                    });
+
+                    const pathcheckboxdisabled = document.querySelectorAll('.path6checkboxdisabled');
+                    pathcheckboxdisabled.forEach(function(value, index) {
+                        value.checked = false;
+                    });
+                }
+            }
+        });
+        for (let y = 1; y <= 5; y++){
+            const pathcompcheckbox = document.querySelector('#path' + i + 'comp' + y + 'checkbox');
+            pathcompcheckbox.addEventListener('change', function() {
+                const isChecked = this.checked;
+                if (isChecked) {
+                    for ( let x = y; x <= 5; x++ ){
+                        const pathcompname = document.querySelector('.path' + i + '_comp' + x +'_name');
+                        const pathcompdesc = document.querySelector('.path' + i + '_comp' + x +'_desc');
+                        const pathcompcheckbox = document.querySelector('#path' + i + 'comp' + x + 'checkbox');
+
+                        pathcompname.value = 'Pas acquise';
+                        pathcompname.disabled = true;
+
+                        pathcompdesc.value = 'Pas acquise';
+                        pathcompdesc.disabled = true;
+
+                        pathcompcheckbox.checked = true;
+
+                    }
+                } else {
+                    const pathname = document.querySelector('.path' + i + '_name');
+                    pathname.value = '';
+                    pathname.disabled = false;
+
+                    const pathcheckbox = document.querySelector('#path' + i + 'checkbox');
+                    pathcheckbox.checked = false;
+                    
+                    for ( let x = y; x >= 1; x-- ){
+                        const pathcompname = document.querySelector('.path' + i + '_comp' + x +'_name');
+                        const pathcompdesc = document.querySelector('.path' + i + '_comp' + x +'_desc');
+                        const pathcompcheckbox = document.querySelector('#path' + i + 'comp' + x + 'checkbox');
+
+                        pathcompname.value = '';
+                        pathcompname.disabled = false;
+
+                        pathcompdesc.value = '';
+                        pathcompdesc.disabled = false;
+
+                        pathcompcheckbox.checked = false;
+
+                    }
+                }
+            });
+        }
+    }
 </script>
 {% endblock %}
