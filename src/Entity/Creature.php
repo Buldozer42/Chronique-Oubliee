@@ -703,17 +703,17 @@ class Creature
     private function addDetrimentalState(DetrimentalState $detrimental_state) : void
     {
         $this->detrimental_states[] = $detrimental_state;
-        if ($detrimental_state === 'blind'){
+        if ($detrimental_state->getName() === 'blind'){
             $this->setInit($this->getInit() - 5);
             for ($i = 0; $i < count($this->attacks); $i++){
                 $this->attacks[$i]->setBonus($this->attacks[$i]->getBonus() - 5);
             }
             $this->setDef($this->getDef() - 5);
         }
-        elseif ($detrimental_state === 'stun' || $detrimental_state === 'surprised'){
+        elseif ($detrimental_state->getName() === 'stun' || $detrimental_state === 'surprised'){
             $this->setDef($this->getDef() - 5);
         }
-        elseif ($detrimental_state === 'reversed'){
+        elseif ($detrimental_state->getName() === 'reversed'){
             for ($i = 0; $i < count($this->attacks); $i++){
                 $this->attacks[$i]->setBonus($this->attacks[$i]->getBonus() - 5);
             }
