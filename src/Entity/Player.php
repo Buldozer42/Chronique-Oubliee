@@ -1005,4 +1005,10 @@ class Player
             $this->setAttDis($this->getAttDis() + 5);
         }
     }
+
+    public function removeCustomDetrimentalState() : void {
+        $this->detrimental_states = array_filter($this->detrimental_states, function ($d) {
+            return $d->getName() !== 'other';
+        });
+    }
 }

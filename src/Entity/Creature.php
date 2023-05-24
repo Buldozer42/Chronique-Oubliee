@@ -743,4 +743,10 @@ class Creature
             $this->setDef($this->getDef() + 5);
         }
     }
+
+    public function removeCustomDetrimentalState() : void {
+        $this->detrimental_states = array_filter($this->detrimental_states, function ($d) {
+            return $d->getName() !== 'other';
+        });
+    }
 }

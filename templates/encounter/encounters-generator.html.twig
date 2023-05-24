@@ -71,7 +71,7 @@
                 <h3 class="card-title"> {{ entity.name }} </h3>
                 <div class="dropdown open">
                   <button class="btn btn-sm btn-secondary dropdown-toggle ms-2" type="button" id="triggerId" data-bs-toggle="dropdown" aria-haspopup="true"
-                      aria-expanded="false"></button>
+                      aria-expanded="false" data-entity-num="{{ loop.index - 1 }}"></button>
                   <div class="dropdown-menu" aria-labelledby="triggerId">
                     <a class="dropdown-item d-flex" title="d12 pour tous les tests au lieu du d20"
                     href="{{ path('set_detrimental_state', {'num': (loop.index - 1), 'state': 'weakened'}) }}">
@@ -113,6 +113,8 @@
                         <img src="{{ asset('svg/surprised.svg') }}" alt="surprised" width="20" height="20">
                         <span>Surpris</span>
                     </a>
+                    <div class="detrimental-state-form px-2" title="">
+                    </div>
                   </div>
                 </div>
                 {% for detrimental_state in entity.getDetrimentalStates %}
@@ -128,15 +130,17 @@
                 <span class="material-symbols-outlined">sprint</span>
                 <p class="card-text me-3">Init : {{ entity.init }}</p>
                 {% if entity|class_name == "Player" %}
-                <span class="material-symbols-outlined">swords</span>
-                <p class="card-text me-3">: {{ entity.getAttCon }}</p>
-                <img src="{{ asset('svg/bow.svg') }}" alt="bow" width="20" height="20">
-                <p class="card-text me-3">: {{ entity.getAttDis }}</p>
-                <span class="material-symbols-outlined">menu_book</span>
-                <p class="card-text">: {{ entity.getAttMag }}</p>
+                    <span class="material-symbols-outlined">swords</span>
+                    <p class="card-text me-3">: {{ entity.getAttCon }}</p>
+                    <img src="{{ asset('svg/bow.svg') }}" alt="bow" width="20" height="20">
+                    <p class="card-text me-3">: {{ entity.getAttDis }}</p>
+                    {% if entity.getModMag != 0 %}
+                        <span class="material-symbols-outlined">menu_book</span>
+                        <p class="card-text">: {{ entity.getAttMag }}</p>
+                    {% endif %}
                 {% else %}
-                <span class="material-symbols-outlined">shield_lock</span>
-                <p class="card-text">: {{ entity.rd }}/{{entity.getRdComment}}</p>
+                    <span class="material-symbols-outlined">shield_lock</span>
+                    <p class="card-text">: {{ entity.rd }}/{{entity.getRdComment}}</p>
                 {% endif %}
               </div>
               <div class="d-flex d-flex justify-content-between">
@@ -309,8 +313,31 @@
             entity_num.value = num;
             entity_hp.value = $(".entity"+num).find(".health").text().split("/")[0];
             $(".entity"+num).find(".manage-hp").toggle();
+            $(".entity"+num).find(".detrimental-state-form").hide();
         });
 
+        var detrimentalFormHtml = `
+            {{ form_start(detrimentalform) }}
+            {{ form_widget(detrimentalform.description) }}
+            {{ form_widget(detrimentalform.entity_num) }}
+            
+            {{ form_rest(detrimentalform) }}
+                <div class="d-grid gap-2 my-1">
+                    <button type="submit" class="btn btn-primary detrimental-btn mt-2">Modifier</button>
+                </div>
+            {{ form_end(detrimentalform) }}
+        `;
+        $(".detrimental-state-form").html(detrimentalFormHtml);
+        $(".dropdown-toggle").click(function() {
+            let num = $(this).data("entity-num");
+            const entity_num = document.querySelectorAll(".detrimental-entity-num")[num];
+            entity_num.value = num;
+        });
+        $(".detrimental-btn").click(function() {
+            console.log("test");
+            let num = $(this).data("entity-num");
+        });
+        
         $(".damage").each(function() {
             let num = $(this).data("entity-num");
             let health = $(".entity"+num).find('.health');

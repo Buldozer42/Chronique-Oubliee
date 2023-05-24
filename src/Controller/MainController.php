@@ -19,6 +19,7 @@ use App\Form\Type\PlayerFormType;
 use App\Form\Type\CreatureFormType;
 use App\Form\EntitySearchType;
 use App\Form\Type\NumberType;
+use App\Form\Type\DetrimentalStateType;
 use App\Form\ManageHpType;
 use App\Form\LevelUpForm;
 use Doctrine\ORM\EntityManagerInterface;
@@ -534,9 +535,35 @@ class MainController extends AbstractController
             $encounter = $encounterRepository->getFirst();
         }
 
+        $detrimentalform = $this->createForm(DetrimentalStateType::class);
+        $detrimentalform->handleRequest($request);
+        if ($detrimentalform->isSubmitted() && $detrimentalform->isValid()) {
+            $encounter = $encounterRepository->getFirst();
+            $tempEntity = $encounter->getCharacters()[$detrimentalform->get('entity_num')->getData()];
+            $entity = clone $tempEntity;
+            $encounter->removeCharacter($tempEntity);
+
+            $new_detrimental = new DetrimentalState();
+            $new_detrimental->setName("other");
+            if ($detrimentalform->get('description')->getData() !== null)
+            {
+                $new_detrimental->setDescription($detrimentalform->get('description')->getData());
+                $entity->manageDetrimentalStates($new_detrimental);
+            }
+            else{
+                $entity->removeCustomDetrimentalState();
+            }
+            
+            $encounter->addCharacter($entity);
+            $entityManager->persist($encounter);
+            $entityManager->flush();
+            return $this->redirectToRoute('encountersgenerator');
+        }
+
         return $this->render('encounter/encounters-generator.html.twig', [
             'form' => $form->createView(),
             'hpForm' => $hpForm->createView(),
+            'detrimentalform' => $detrimentalform->createView(),
             'entities' => $encounter->getCharacters(),
         ]);
     }
@@ -706,12 +733,6 @@ class MainController extends AbstractController
             'nc' => $request->get('nc')
         ]);
     }
-
-    // public function playerlistOrdered(Request $request, PlayerRepository $playerRepository): Response
-    // {
-    //     $players = $playerRepository->findAllOrderBy($request->get('by'), $request->get('asc'));
-    //     return $this->playerlist($request, $playerRepository, $players);
-    // }
 
     //-----------------------------------------------------------------------------------//
 
