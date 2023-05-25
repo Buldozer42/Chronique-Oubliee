@@ -6,14 +6,16 @@
     <div class="col-md-5">
         {{ form_start(form, {'attr': {'id': 'entity-search-form', 'class': 'd-flex'}}) }}
 
-        {{ form_widget(form.search) }}
+        {{ form_widget(form.search, {'attr': {'class': 'form-control me-2'}}) }}
+        {{ form_widget(form.nb, {'attr': {'style': 'width: 3rem'}}) }}
+        
         {{ form_widget(form.entity_id) }}
         {{ form_widget(form.entity_type) }}     
         
         {{ form_rest(form) }}
             <button type="submit" class="btn btn-primary mx-2">Ajouter</button>
             <!-- Modal trigger button -->
-            <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#modalNotepad">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNotepad">
                 Note
             </button>
         {{ form_end(form) }}
@@ -50,7 +52,6 @@
       <div class="modal-body">
       </div>
       <div class="modal-footer">
-        {# <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> #}
       </div>
     </div>
   </div>
@@ -68,7 +69,7 @@
                 {% else %}
                     <span class="material-symbols-outlined mb-1">pets</span>
                 {% endif %}
-                <h3 class="card-title"> {{ entity.name }} </h3>
+                <h3 class="card-title entity-name"> {{ entity.name }} </h3>
                 <div class="dropdown open">
                   <button class="btn btn-sm btn-secondary dropdown-toggle ms-2" type="button" id="triggerId" data-bs-toggle="dropdown" aria-haspopup="true"
                       aria-expanded="false" data-entity-num="{{ loop.index - 1 }}"></button>
@@ -199,13 +200,11 @@
               <div class="d-grid gap-2 my-1">
                 <a class="btn btn-primary modif-hp" data-entity-num="{{ loop.index - 1 }}">Modifer les PV</a>
                 {% if entity|class_name == "Player" %}
-                    {# <a href="{{ path('playersheet', {'id': entity.id}) }}" class="btn btn-primary" target="_blank">Voir</a> #}
                     <button type="button" class="btn btn-primary modalSheetBtn" data-bs-toggle="modal" data-bs-target="#modalSheet" 
                     data-entity-type="player" data-entity-id="{{ entity.id }}">
                         Voir
                     </button>
                 {% else %}
-                    {# <a href="{{ path('creaturesheet', {'id': entity.id}) }}" class="btn btn-primary" target="_blank">Voir</a> #}
                     <button type="button" class="btn btn-primary modalSheetBtn" data-bs-toggle="modal" data-bs-target="#modalSheet" 
                     data-entity-type="creature" data-entity-id="{{ entity.id }}">
                         Voir
@@ -359,7 +358,6 @@
 
         $(".save-note").click(function() {
             setCookie("note", $("#note").val(), 365);
-            console.log(getCookie("note"));
         });
         $('.modalSheetBtn').click(function() {
             let modal = $('#modalSheet');
@@ -376,10 +374,9 @@
                 data = $(data).not('.navbar');
                 $(data).find('#editBtn').attr('class', 'd-none');
                 modal.find('.modal-body').html(data);
-                //modal.find('.modal-title').text("Fiche");
             }
             });
         });
-});
+    });
 </script>
 {% endblock %}

@@ -39,5 +39,13 @@ class EntitySearchType extends AbstractType
                 'style' => 'display: none;'
             ]
         ]);
+        $builder->add('nb', IntegerType::class, [
+            'required' => false,
+            'attr' => [
+                'class' => 'form-control',
+                'min' => 1,
+            ],
+            'data' => 1,
+        ]);
     }
 }

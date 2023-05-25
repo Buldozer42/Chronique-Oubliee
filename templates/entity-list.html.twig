@@ -9,6 +9,7 @@
     <div class="d-flex">
       {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
       {{ form_widget(form.search) }}
+      {{ form_widget(form.nb, {'attr': {'class': 'd-none'}}) }}
       {{ form_widget(form.entity_id) }}
       {{ form_widget(form.entity_type) }}
           

@@ -479,24 +479,27 @@ class MainController extends AbstractController
             $encounter = $encounterRepository->getFirst();
             $entityId = $form->get('entity_id')->getData();
             $entityType = $form->get('entity_type')->getData();
-            if ($entityType === 'Player')
-            {
-                $player = $playerRepository->find($entityId);
-                if ($player !== null){
-                    $entity = clone $player;
+            $nb = $form->get('nb')->getData();
+            for ($i = 0; $i < $nb; $i++){
+                if ($entityType === 'Player')
+                {
+                    $player = $playerRepository->find($entityId);
+                    if ($player !== null){
+                        $entity = clone $player;
+                    }
                 }
-            }
-            else{
-                $creature = $creatureRepository->find($entityId);
-                if ($creature !== null){
-                    $entity = clone $creature;
+                else{
+                    $creature = $creatureRepository->find($entityId);
+                    if ($creature !== null){
+                        $entity = clone $creature;
+                    }
                 }
+                
+                if (in_array($entity, $encounter->getCharacters())){
+                    $entity->setName($entity->getName().' ('.$encounter->countCharactersById($entityId).')');
+                }
+                $encounter->addCharacter($entity);
             }
-            
-            if (in_array($entity, $encounter->getCharacters())){
-                $entity->setName($entity->getName().' ('.$encounter->countCharactersById($entityId).')');
-            }
-            $encounter->addCharacter($entity);
             $entityManager->persist($encounter);
             $entityManager->flush();
             return $this->redirectToRoute('encountersgenerator');
