@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+{% include 'navbar.html.twig' %}
+
+<div class="container">
+    <h1>Modifier l'inventaire de {{ player.name }}</h1>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">
+                {% if label == 'success' %}
+                    <div class="alert alert-success" role="alert">
+                {% elseif label == 'error' %}
+                    <div class="alert alert-danger" role="alert">
+                {% elseif label == 'info' %}
+                    <div class="alert alert-primary" role="alert">
+                {% else %}
+                    <div class="alert alert-light" role="alert">
+                {% endif %}
+                {{ message }}
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {{ form_start(form) }}
+    <div class="form-group">
+        <label class="from-label required" for="inventory">Inventaire</label>
+        <ul class="inventory list-group"
+            data-index="{{ form.inventory|length > 0 ? form.inventory|last.vars.name + 1 : 0 }}"
+            data-prototype="{{ form_widget(form.inventory.vars.prototype)|e('html_attr') }}"
+        >
+            {% for inventoryItem in form.inventory %}
+                <li class="list-group-item">{{ form_widget(inventoryItem.name) }}</li>
+            {% endfor %}
+        </ul>
+        <button type="button" class=" btn btn-primary add_item_link my-2" data-collection-holder-class="inventory">Ajouter un objet</button>
+    </div>
+    <div class="form-group">
+        {{ form_label(form.clutter) }}
+        {{ form_widget(form.clutter) }}
+    </div>
+    {{ form_rest(form) }}
+        <input type="submit" class="btn btn-primary my-2"/>
+    {{ form_end(form) }}
+</div>
+<script>
+    const addFormDeleteLink = (item) => {
+        const removeFormButton = document.createElement('button');
+        removeFormButton.innerText = 'X';
+        removeFormButton.classList.add('btn', 'btn-danger', 'btn-sm', 'mb-1');
+
+        item.append(removeFormButton);
+
+        removeFormButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            item.remove();
+        });
+    };
+
+    const addFormToCollection = (e) => {
+        const collectionHolder = document.querySelector('.' + e.currentTarget.dataset.collectionHolderClass);
+        const div = document.createElement('div');
+        div.classList.add('d-flex', 'align-items-center');
+        const item = document.createElement('li');
+        item.innerHTML = collectionHolder
+        .dataset
+        .prototype
+        .replace(
+            /__name__/g,
+            collectionHolder.dataset.index
+        );
+        div.append(item);
+        collectionHolder.appendChild(div);
+        collectionHolder.dataset.index++;
+        // add a delete link to the new form
+        addFormDeleteLink(div);
+    };
+    document
+    .querySelectorAll('ul.inventory li')
+    .forEach((inventoryItem) => {
+        addFormDeleteLink(inventoryItem)
+    });
+    document
+    .querySelectorAll('.add_item_link')
+    .forEach(btn => {
+        btn.addEventListener("click", addFormToCollection)
+    });
+</script>
+{% endblock %}

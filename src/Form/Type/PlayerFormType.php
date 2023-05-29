@@ -289,7 +289,7 @@ class PlayerFormType extends AbstractType
             'label' => 'Points de chance max',
             'label_attr' => ['class' => 'form-label']
         ]);
-         $builder->add('pc', IntegerType::class, [
+        $builder->add('pc', IntegerType::class, [
             'attr' => [
                 'class' => 'form-control',
                 'min' => 0

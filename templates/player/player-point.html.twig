@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+{% include 'navbar.html.twig' %}
+
+<div class="container">
+    <h1>Modifier les points de {{ player.name }}</h1>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">
+                {% if label == 'success' %}
+                    <div class="alert alert-success" role="alert">
+                {% elseif label == 'error' %}
+                    <div class="alert alert-danger" role="alert">
+                {% elseif label == 'info' %}
+                    <div class="alert alert-primary" role="alert">
+                {% else %}
+                    <div class="alert alert-light" role="alert">
+                {% endif %}
+                {{ message }}
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {{ form_start(form) }}
+        <h3> Points actuels </h3>
+        <div class="ms-2">
+            <div class="form-group">
+                {{ form_label(form.hp) }}
+                {{ form_widget(form.hp) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.pc) }}
+                {{ form_widget(form.pc) }}
+            </div>
+             <div class="form-group">
+                {{ form_label(form.pr) }}
+                {{ form_widget(form.pr) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.pm) }}
+                {{ form_widget(form.pm) }}
+            </div>
+        </div>
+    {{ form_rest(form) }}
+        <input type="submit" class="btn btn-primary my-2"/>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

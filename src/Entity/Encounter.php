@@ -60,6 +60,13 @@ class Encounter
         return $this;
     }
 
+    public function clearCharacters(): self
+    {
+        $this->characters = [];
+
+        return $this;
+    }
+
     public function countCharactersById($id): int
     {
         $count = 0;

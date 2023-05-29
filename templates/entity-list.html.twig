@@ -117,6 +117,18 @@
             <a href="{{ path(path ~ 'remove', {id: entity.id}) }}"><button class="btn btn-danger">Delete</button></a>
             {% if path == 'player' %}
               <a href="{{ path('player_lvl_up', {id: entity.id}) }}"><button class="btn btn-success">Level Up</button></a>
+              <a href="{{ path('player_upd_inventory', {id: entity.id}) }}" class="link-dark">
+                <img src="{{ asset('svg/chest.svg') }}" alt="coffre" width="40" height="30">
+              </a>
+              <a href="{{ path('player_upd_coin', {id: entity.id}) }}" class="link-dark">
+                <img src="{{ asset('svg/coin.svg') }}" alt="pièce d'or" width="40" height="30">
+              </a>
+              <a href="{{ path('player_upd_point', {id: entity.id}) }}" class="link-dark">
+                <img src="{{ asset('svg/potion.svg') }}" alt="potion" width="40" height="30">
+              </a>
+              <a href="{{ path('player_upd_weapon', {id: entity.id}) }}" class="link-dark">
+                <img src="{{ asset('svg/sword.svg') }}" alt="épée" width="40" height="30">
+              </a>
             {% endif %}
           </td>
         </tr>

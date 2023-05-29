@@ -7,7 +7,7 @@
         {{ form_start(form, {'attr': {'id': 'entity-search-form', 'class': 'd-flex'}}) }}
 
         {{ form_widget(form.search, {'attr': {'class': 'form-control me-2'}}) }}
-        {{ form_widget(form.nb, {'attr': {'style': 'width: 3rem'}}) }}
+        {{ form_widget(form.nb, {'attr': {'style': 'width: 3.5rem'}}) }}
         
         {{ form_widget(form.entity_id) }}
         {{ form_widget(form.entity_type) }}     
@@ -18,6 +18,7 @@
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNotepad">
                 Note
             </button>
+           <a href="{{ path('encounter_clear')}}"><button type="button" class="btn btn-danger mx-2">Nettoyer</button></a>
         {{ form_end(form) }}
     </div>
 </div>
@@ -151,6 +152,17 @@
                   </div>
                   <button class="btn btn-success btn-sm heal" data-entity-num="{{ loop.index - 1 }}">+</button>
               </div>
+              {% if entity|class_name == "Player" %}
+                {% if entity.getModMag != 0 %}
+                <div class="d-flex d-flex justify-content-between mt-2">
+                    <button class="btn btn-danger btn-sm remove-mana" data-entity-num="{{ loop.index - 1 }}">-</button>
+                    <div class="col-9 text-center border border-2 rounded mana-bar">
+                        <p class="mana">{{ entity.pm }}/{{ entity.getMaxPm }}</p>
+                    </div>
+                    <button class="btn btn-success btn-sm add-mana" data-entity-num="{{ loop.index - 1 }}">+</button>
+                </div>
+                {% endif %}
+              {% endif %}
               <div>
                 {% if entity|class_name == "Player" %}
                     {% set weapons = json_decode(entity.getWeapons, true) %}
@@ -194,12 +206,17 @@
                 {% endif %}
                 <div class="manage-hp mt-2">
                 </div>
+                <div class="manage-pm mt-2">
+                </div>
               </div>
             </div>
             <div class="card-footer">
               <div class="d-grid gap-2 my-1">
                 <a class="btn btn-primary modif-hp" data-entity-num="{{ loop.index - 1 }}">Modifer les PV</a>
                 {% if entity|class_name == "Player" %}
+                    {% if entity.getModMag != 0 %}
+                        <a class="btn btn-primary modif-pm" data-mana-entity-num="{{ loop.index - 1 }}">Modifer les PM</a>
+                    {% endif %}
                     <button type="button" class="btn btn-primary modalSheetBtn" data-bs-toggle="modal" data-bs-target="#modalSheet" 
                     data-entity-type="player" data-entity-id="{{ entity.id }}">
                         Voir
@@ -225,6 +242,9 @@
 <style>
     .health-bar {
       background: green;
+    }
+    .mana-bar {
+      background: blue;
     }
 </style>
 <script>
@@ -290,6 +310,50 @@
             }
         });
     }
+    function updateManaBar(mana_bar, percent) {
+        let card = mana_bar.parent().parent();
+        let damage = card.find('.remove-mana');
+        if (percent <= 0) {
+            mana_bar.css("background", "lightgray");
+            damage.prop('disabled', true);
+        }
+        else if (percent <= 25) {
+            card.css("background", "white");
+            mana_bar.css("background", "linear-gradient(90deg, #00CBFF "+ percent + "%, white " + percent + "%)");
+            damage.prop('disabled', false);
+        } else if (percent <= 50) {
+            card.css("background", "white");
+            mana_bar.css("background", "linear-gradient(90deg, #008EFF "+ percent + "%, white " + percent + "%)");
+            damage.prop('disabled', false);
+        } else  {
+            card.css("background", "white");
+            mana_bar.css("background", "linear-gradient(90deg, blue "+ percent + "%, white " + percent + "%)");
+            damage.prop('disabled', false);
+        }
+    }
+
+    function managePm(num, nb_pm, type){
+        let mana = $(".entity"+num).find('.mana');
+        let mana_bar = $(".entity"+num).find('.mana-bar');
+        let base_url = "";
+        if (type == "add") {
+            base_url = "{{ url('add_pm', {'num': 'tmp', 'nb' : 'pmt'}) }}";
+        } else {
+            base_url = "{{ url('subtract_pm', {'num': 'tmp', 'nb' : 'pmt'}) }}";
+        }
+        $.ajax({
+            type: "POST",
+            url: base_url.replace("tmp", num).replace("pmt", nb_pm),
+            success: function(data) {
+                mana.text(data.pm + "/" + data.maxPm);
+                let percent = data.pm / data.maxPm * 100;
+                updateManaBar(mana_bar, percent);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Erreur lors de la soustraction de PM : " + errorThrown);
+            }
+        });
+    }
     $(document).ready(function() {
         $(".manage-hp").hide();
         var hpFormHtml = `
@@ -312,6 +376,32 @@
             entity_num.value = num;
             entity_hp.value = $(".entity"+num).find(".health").text().split("/")[0];
             $(".entity"+num).find(".manage-hp").toggle();
+            $(".entity"+num).find(".manage-pm").hide();
+            $(".entity"+num).find(".detrimental-state-form").hide();
+        });
+
+        $(".manage-pm").hide();
+        var pmFormHtml = `
+            {{ form_start(pmForm) }}
+            {{ form_widget(pmForm.entity_pm) }}
+            {{ form_widget(pmForm.entity_num) }}
+            
+            {{ form_rest(pmForm) }}
+                <div class="d-grid gap-2 my-1">
+                    <button type="submit" class="btn btn-primary mt-2">Modifier</button>
+                </div>
+            {{ form_end(pmForm) }}
+        `;
+        $(".manage-pm").html(pmFormHtml);
+
+        $(".modif-pm").click(function() {
+            let num = $(this).data("mana-entity-num");
+            const mana_entity_num = document.querySelectorAll(".mana-entity-num")[num];
+            const entity_pm = document.querySelectorAll(".entity-pm")[num];
+            mana_entity_num.value = num;
+            entity_pm.value = $(".entity"+num).find(".mana").text().split("/")[0];
+            $(".entity"+num).find(".manage-pm").toggle();
+            $(".entity"+num).find(".manage-hp").hide();
             $(".entity"+num).find(".detrimental-state-form").hide();
         });
 
@@ -352,6 +442,22 @@
         $(".heal").click(function() {
             let num = $(this).data("entity-num");
             manageHp(num, 1, "add");
+        });
+        $(".remove-mana").each(function() {
+            let num = $(this).data("entity-num");
+            let mana = $(".entity"+num).find('.mana');
+            let mana_bar = $(".entity"+num).find('.mana-bar');
+            let percent = mana.text().split("/")[0] / mana.text().split("/")[1] * 100;
+            updateManaBar(mana_bar, percent);
+        });
+
+        $(".remove-mana").click(function() {
+            let num = $(this).data("entity-num");
+            managePm(num, 1, "subtract");
+        });
+        $(".add-mana").click(function() {
+            let num = $(this).data("entity-num");
+            managePm(num, 1, "add");
         });
 
         $("#note").val(getCookie("note"));

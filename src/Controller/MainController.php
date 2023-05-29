@@ -21,7 +21,12 @@ use App\Form\EntitySearchType;
 use App\Form\Type\NumberType;
 use App\Form\Type\DetrimentalStateType;
 use App\Form\ManageHpType;
+use App\Form\ManagePmType;
 use App\Form\LevelUpForm;
+use App\Form\InventoryForm;
+use App\Form\CoinForm;
+use App\Form\PointForm;
+use App\Form\WeaponForm;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -300,6 +305,157 @@ class MainController extends AbstractController
             'form' => $form->createView()
         ]);
     }
+    /**
+     * @Route("/player_upd_inventory/{id}", name="player_upd_inventory")
+     */
+    public function updatePlayerInventory(Player $player, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugge)
+    {
+        $form = $this->createForm(InventoryForm::class);
+        $form->get('inventory')->setData($player->getInventory());
+        $form->get('clutter')->setData($player->getClutter());
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()){
+            $player->setInventory($form->get('inventory')->getData());
+            $player->setClutter($form->get('clutter')->getData());
+            $entityManager->persist($player);
+            $entityManager->flush();
+            $this->addFlash('success', 'Inventaire du personnage mis à jour !');
+            return $this->redirectToRoute('playerlist');
+        }
+        else if ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Inventaire du personnage non mis à jour ! Le formulaire contient des erreurs !');
+        }
+        return $this->render('player/player-inventory.html.twig', [
+            'player' => $player,
+            'form' => $form->createView()
+        ]);
+    }
+    /**
+     * @Route("/player_upd_coin/{id}", name="player_upd_coin")
+     */
+    public function updatePlayerCoin(Player $player, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugge)
+    {
+        $form = $this->createForm(CoinForm::class);
+        $money = json_decode($player->getMoney(), true);
+        $form->get('po')->setData($money['po']);
+        $form->get('pa')->setData($money['pa']);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()){
+            $money = ["po" => $form->get('po')->getData(),"pa" => $form->get('pa')->getData()];
+            $player->setMoney(json_encode($money));
+            $entityManager->persist($player);
+            $entityManager->flush();
+            $this->addFlash('success', 'Argent du personnage mis à jour !');
+            return $this->redirectToRoute('playerlist');
+        }
+        else if ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Argent du personnage non mis à jour ! Le formulaire contient des erreurs !');
+        }
+        return $this->render('player/player-coin.html.twig', [
+            'player' => $player,
+            'form' => $form->createView()
+        ]);
+    }
+    /**
+     * @Route("/player_upd_point/{id}", name="player_upd_point")
+     */
+    public function updatePlayerPoint(Player $player, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugge)
+    {
+        $form = $this->createForm(PointForm::class);
+        $form->get('hp')->setData($player->getHp());
+        $form->get('pc')->setData($player->getPc());
+        $form->get('pr')->setData($player->getPr());
+        $form->get('pm')->setData($player->getPm());
+        $form->handleRequest($request);
+        $error = false;
+        if ($form->isSubmitted() && $form->isValid()){
+            if ($form->get('hp')->getData() > $player->getMaxHp())
+            {
+                $this->addFlash('error', 'Les points de vie actuels ne peuvent pas être supérieurs a' . $player->getMaxHp() . ' !');
+                $error = true;
+            }
+            if ($form->get('pc')->getData() > $player->getMaxPc())
+            {
+                $this->addFlash('error', 'Les points de chance actuels ne peuvent pas être supérieurs a' . $player->getMaxPc() . ' !');
+                $error = true;
+            }
+            if ($form->get('pr')->getData() > $player->getMaxPr())
+            {
+                $this->addFlash('error', 'Les points de récupération actuels ne peuvent pas être supérieurs a' . $player->getMaxPr() . ' !');
+                $error = true;
+            }
+            if ($form->get('pm')->getData() > $player->getMaxPm())
+            {
+                $this->addFlash('error', 'Les points de mana actuels ne peuvent pas être supérieurs a' . $player->getMaxPm() . ' !');
+                $error = true;
+            }
+
+            if ($error)
+            {
+                return $this->render('player/player-point.html.twig', [
+                    'form' => $form->createView(),
+                    'player' => $player
+                ]);
+            }
+
+            $player->setHp($form->get('hp')->getData());
+            $player->setPc($form->get('pc')->getData());
+            $player->setPr($form->get('pr')->getData());
+            $player->setPm($form->get('pm')->getData());
+            $entityManager->persist($player);
+            $entityManager->flush();
+            $this->addFlash('success', 'Points du personnage mis à jour !');
+            return $this->redirectToRoute('playerlist');
+        }
+        else if ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Points du personnage non mis à jour ! Le formulaire contient des erreurs !');
+        }
+        return $this->render('player/player-point.html.twig', [
+            'player' => $player,
+            'form' => $form->createView()
+        ]);
+    }
+    /**
+     * @Route("/player_upd_weapon/{id}", name="player_upd_weapon")
+     */
+    public function updatePlayerWeapon(Player $player, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugge)
+    {
+        $form = $this->createForm(WeaponForm::class);
+        $weapons = json_decode($player->getWeapons(), true);
+        for ($i=1; $i <4;){
+            $form->get('weapon'.$i.'_name')->setData($weapons['weapon'.$i]['name']);
+            $form->get('weapon'.$i.'_att')->setData($weapons['weapon'.$i]['att']);
+            $form->get('weapon'.$i.'_dm')->setData($weapons['weapon'.$i]['dm']);
+            $form->get('weapon'.$i.'_special')->setData($weapons['weapon'.$i]['special']);
+            $i++;
+        }
+        $form->get('clutter')->setData($player->getClutter());
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()){
+            $weapons = [];
+            for ($i = 1; $i <= 3; $i++) {
+                $weapons["weapon$i"] = [
+                    "name" => $form->get("weapon{$i}_name")->getData(),
+                    "att" => $form->get("weapon{$i}_att")->getData(),
+                    "dm" => $form->get("weapon{$i}_dm")->getData(),
+                    "special" => $form->get("weapon{$i}_special")->getData()
+                ];
+            }
+            $player->setWeapons(json_encode($weapons));
+            $player->setClutter($form->get('clutter')->getData());
+            $entityManager->persist($player);
+            $entityManager->flush();
+            $this->addFlash('success', 'Armes du personnage mis à jour !');
+            return $this->redirectToRoute('playerlist');
+        }
+        else if ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Armes du personnage non mis à jour ! Le formulaire contient des erreurs !');
+        }
+        return $this->render('player/player-weapon.html.twig', [
+            'player' => $player,
+            'form' => $form->createView()
+        ]);
+    }
     //-----------------------------------------------------------------------------------//
 
     // Creature
@@ -537,6 +693,38 @@ class MainController extends AbstractController
         else{
             $encounter = $encounterRepository->getFirst();
         }
+        $pmForm = $this->createForm(ManagePmType::class);
+        $pmForm->handleRequest($request);
+        if ($pmForm->isSubmitted() && $pmForm->isValid()) {
+            $encounter = $encounterRepository->getFirst();
+            $tempEntity = $encounter->getCharacters()[$pmForm->get('entity_num')->getData()];
+            $entity = clone $tempEntity;
+            $new_pm = $pmForm->get('entity_pm')->getData();
+
+            $encounter->removeCharacter($tempEntity);
+            if ($new_pm < $entity->getMaxPm())
+                if ($new_pm > 0)
+                    $entity->setPm($new_pm);
+                else
+                    $entity->setPm(0);
+            else {
+                $entity->setPm($entity->getMaxPm());
+            }
+
+            $encounter->addCharacter($entity);
+            $entityManager->persist($encounter);
+            $entityManager->flush();
+            return $this->redirectToRoute('encountersgenerator');
+        }
+
+        if ($encounterRepository->tableIsEmpty()){
+            $encounter = new Encounter();
+            $entityManager->persist($encounter);
+            $entityManager->flush();
+        }
+        else{
+            $encounter = $encounterRepository->getFirst();
+        }
 
         $detrimentalform = $this->createForm(DetrimentalStateType::class);
         $detrimentalform->handleRequest($request);
@@ -566,6 +754,7 @@ class MainController extends AbstractController
         return $this->render('encounter/encounters-generator.html.twig', [
             'form' => $form->createView(),
             'hpForm' => $hpForm->createView(),
+            'pmForm' => $pmForm->createView(),
             'detrimentalform' => $detrimentalform->createView(),
             'entities' => $encounter->getCharacters(),
         ]);
@@ -665,6 +854,53 @@ class MainController extends AbstractController
     {
         return $this->manageHp($request, $encounterRepository, $entityManager, 'add');
     }
+    private function managePm(Request $request, EncounterRepository $encounterRepository, EntityManagerInterface $entityManager, $type): JsonResponse
+    {
+        $encounter = $encounterRepository->getFirst();
+        $tempEntity = $encounter->getCharacters()[$request->attributes->get('num')];
+        $entity = clone $tempEntity;
+        $encounter->removeCharacter($tempEntity);
+        $nb_pm = $request->attributes->get('nb');
+        if ($type == 'add')
+        {
+            if (($entity->getPm() + $nb_pm)< $entity->getMaxPm())
+                $entity->setPm($entity->getPm() + $nb_pm);
+            else {
+                $entity->setPm($entity->getMaxPm());
+            }
+        }
+        else
+        {
+            if (($entity->getPm() - $nb_pm) > 0)
+                $entity->setPm($entity->getPm() - $nb_pm);
+            else {
+                $entity->setPm(0);
+            }
+        }
+        $encounter->addCharacter($entity);
+        $entityManager->persist($encounter);
+        $entityManager->flush();
+        return new JsonResponse([
+            'success' => true, 
+            "pm" => $entity->getPm(), 
+            "maxPm" => $entity->getMaxPm()
+        ]);
+    }
+    /**
+     * @Route("/encountersgenerator/subtract_pm/{num}/{nb}", name="subtract_pm")
+     */
+    public function subtractPm(Request $request, EncounterRepository $encounterRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        return $this->managePm($request, $encounterRepository, $entityManager, 'subtract');
+    }
+
+    /**
+     * @Route("/encountersgenerator/add_pm/{num}/{nb}", name="add_pm")
+     */
+    public function addPm(Request $request, EncounterRepository $encounterRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        return $this->managePm($request, $encounterRepository, $entityManager, 'add');
+    }
 
     private function buildDetrimentalState(string $name): DetrimentalState
     {
@@ -735,6 +971,18 @@ class MainController extends AbstractController
             'form' => $form->createView(),
             'nc' => $request->get('nc')
         ]);
+    }
+
+    /**
+     * @Route("/encounter/clear", name="encounter_clear")
+     */
+    public function clearEncounter(EntityManagerInterface $entityManager, EncounterRepository $encounterRepository) : Response
+    {
+        $encounter = $encounterRepository->getFirst();
+        $encounter->clearCharacters();
+        $entityManager->persist($encounter);
+        $entityManager->flush();
+        return $this->redirectToRoute('encountersgenerator');
     }
 
     //-----------------------------------------------------------------------------------//
