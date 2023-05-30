@@ -340,6 +340,10 @@
                 <p>{{player.getModCon}}+</p>
                 <p>{{player.level}}</p>
             </div>
+            <div class="d-flex">
+                <h5 class="me-2">Épuisement magique : </h5>
+                <p>{{player.em | default(0)}}</p>
+            </div>
         </div>
     </div>
 </div>

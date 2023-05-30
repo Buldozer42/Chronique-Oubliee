@@ -383,13 +383,6 @@ class PlayerFormType extends AbstractType
                 'style' => 'display: none;'
             ]
         ]);
-        // $builder->add('hp', IntegerType::class, [
-        //     'disabled' => true,
-        //     'data' => 0,
-        //     'attr' => [
-        //         'style' => 'display: none;'
-        //     ]
-        // ]);
         for ($i = 1; $i <= 6; $i++) {
             $builder->add('path'. $i .'_name', TextType::class, [
                 'mapped' => false,
@@ -416,6 +409,16 @@ class PlayerFormType extends AbstractType
             'attr' => [
                 'style' => 'display: none;'
             ]
+        ]);
+
+        $builder->add('em', IntegerType::class, [
+            'mapped' => false,
+            'attr' => [
+                'class' => 'form-control',
+                'min' => 0
+            ],
+            'label' => 'Épuisement magique',
+            'label_attr' => ['class' => 'form-label']
         ]);
     }
 

@@ -311,6 +311,11 @@ class Player
      */
     private $detrimental_states = [];
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $em;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -1010,5 +1015,17 @@ class Player
         $this->detrimental_states = array_filter($this->detrimental_states, function ($d) {
             return $d->getName() !== 'other';
         });
+    }
+
+    public function getEm(): ?int
+    {
+        return $this->em;
+    }
+
+    public function setEm(?int $em): self
+    {
+        $this->em = $em;
+
+        return $this;
     }
 }
