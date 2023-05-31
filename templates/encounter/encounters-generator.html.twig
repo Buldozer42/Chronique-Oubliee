@@ -212,7 +212,11 @@
             </div>
             <div class="card-footer">
               <div class="d-grid gap-2 my-1">
-                <a class="btn btn-primary modif-hp" data-entity-num="{{ loop.index - 1 }}">Modifer les PV</a>
+                <div class="d-flex">
+                    <a class="btn btn-primary flex-fill mx-1 add-hp" data-entity-num="{{ loop.index - 1 }}">Ajouter</a>
+                    <a class="btn btn-primary flex-fill mx-1 modify-hp" data-entity-num="{{ loop.index - 1 }}">Modifer</a>
+                    <a class="btn btn-primary flex-fill mx-1 substract-hp" data-entity-num="{{ loop.index - 1 }}">Enlever</a>
+                </div>
                 {% if entity|class_name == "Player" %}
                     {% if entity.getModMag != 0 %}
                         <a class="btn btn-primary modif-pm" data-mana-entity-num="{{ loop.index - 1 }}">Modifer les PM</a>
@@ -354,30 +358,47 @@
             }
         });
     }
+
+    function changeHp(num, request_type_value){
+        const entity_num = document.querySelectorAll(".entity-num")[num];
+        const request_type = document.querySelectorAll(".request-type")[num];
+        entity_num.value = num;
+        if (request_type_value == "modify") {
+            const entity_hp = document.querySelectorAll(".entity-hp")[num];
+            entity_hp.value = $(".entity"+num).find(".health").text().split("/")[0];
+        }
+        request_type.value = request_type_value;
+        $(".entity"+num).find(".manage-hp").toggle();
+        $(".entity"+num).find(".manage-pm").hide();
+        $(".entity"+num).find(".detrimental-state-form").hide();
+    }
+
     $(document).ready(function() {
         $(".manage-hp").hide();
         var hpFormHtml = `
             {{ form_start(hpForm) }}
             {{ form_widget(hpForm.entity_hp) }}
             {{ form_widget(hpForm.entity_num) }}
+            {{ form_widget(hpForm.request_type) }}
             
             {{ form_rest(hpForm) }}
                 <div class="d-grid gap-2 my-1">
-                    <button type="submit" class="btn btn-primary mt-2">Modifier</button>
+                    <button type="btn" class="btn btn-primary mt-2">Modifier</button>
                 </div>
             {{ form_end(hpForm) }}
         `;
         $(".manage-hp").html(hpFormHtml);
 
-        $(".modif-hp").click(function() {
-            let num = $(this).data("entity-num");
-            const entity_num = document.querySelectorAll(".entity-num")[num];
-            const entity_hp = document.querySelectorAll(".entity-hp")[num];
-            entity_num.value = num;
-            entity_hp.value = $(".entity"+num).find(".health").text().split("/")[0];
-            $(".entity"+num).find(".manage-hp").toggle();
-            $(".entity"+num).find(".manage-pm").hide();
-            $(".entity"+num).find(".detrimental-state-form").hide();
+        $(".add-hp").click(function() {
+            changeHp($(this).data("entity-num"), "add");
+        });
+
+        $(".modify-hp").click(function() {
+            changeHp($(this).data("entity-num"), "modify");
+        });
+
+        $(".substract-hp").click(function() {
+            changeHp($(this).data("entity-num"), "substract");
         });
 
         $(".manage-pm").hide();

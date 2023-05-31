@@ -30,5 +30,12 @@ class ManageHpType extends AbstractType
                 'class' => 'form-control entity-num',
             ],
         ]);
+        $builder->add('request_type', TextType::class, [
+            'required' => false,
+            'attr' => [
+                'style' => 'display:none',
+                'class' => 'form-control request-type',
+            ],
+        ]);
     }
 }

@@ -666,16 +666,27 @@ class MainController extends AbstractController
         if ($hpForm->isSubmitted() && $hpForm->isValid()) {
             $encounter = $encounterRepository->getFirst();
             $tempEntity = $encounter->getCharacters()[$hpForm->get('entity_num')->getData()];
-            $entity = clone $tempEntity;
+            $requestType = $hpForm->get('request_type')->getData();
+            //throw new \Exception($requestType);
             $new_hp = $hpForm->get('entity_hp')->getData();
 
+            $entity = clone $tempEntity;
             $encounter->removeCharacter($tempEntity);
-            if ($new_hp < $entity->getMaxHp())
-                if ($new_hp > 0)
+            if ($requestType == "add"){
+                $new_hp = $entity->getHp() + $new_hp;
+            }
+            if ($requestType == "substract"){
+                $new_hp = $entity->getHp() - $new_hp;
+            }
+            if ($new_hp < $entity->getMaxHp()){
+                if ($new_hp > 0){
                     $entity->setHp($new_hp);
-                else
+                }
+                else {
                     $entity->setHp(0);
-            else {
+                }
+            }
+            else{
                 $entity->setHp($entity->getMaxHp());
             }
 
