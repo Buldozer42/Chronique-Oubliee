@@ -97,6 +97,7 @@ class CreatureRepository extends ServiceEntityRepository
             ->andWhere('c.nc <= :nc')
             ->setParameter('nc', $nc)
             ->orderBy('c.nc', 'DESC')
+            ->addOrderBy('c.name', 'ASC')
             ->getQuery()
             ->getResult()
         ;

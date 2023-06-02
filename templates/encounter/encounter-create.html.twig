@@ -84,7 +84,10 @@
         let max_difficulty = getPm(player_nc);
         let remove_btn = document.createElement("button");
         remove_btn.classList.add("btn", "btn-danger", "btn-sm", "remove-btn");
-        remove_btn.textContent = "X";
+        remove_btn.textContent = "-";
+        let add_btn = document.createElement("button");
+        add_btn.classList.add("btn", "btn-primary", "btn-sm", "mx-1","add-btn");
+        add_btn.textContent = "+";
 
         $(".difficulty").text(difficulty+"/"+max_difficulty);
         $(".table-row").each(function(){
@@ -124,6 +127,7 @@
                 creature_nb.textContent = "x1";
 
                 creature_li.append(remove_btn.cloneNode(true));
+                creature_li.append(add_btn.cloneNode(true));
                 creature_li.append(creature_name);
                 creature_li.append(creature_nb);
                 $(".creature-list").append(creature_li);
@@ -146,7 +150,23 @@
             let nb_int = parseInt(nb.split("x")[1]);
             nb_int--;
             $(this).parent().find(".creature-nb").text("x"+nb_int);
+        });
+        $(".creature-list").on("click", ".add-btn", function(){
+            let pm = $(this).parent().data("pm");
+            difficulty += pm;
+            percent = difficulty / max_difficulty * 100;
+            $(".difficulty").text(difficulty+"/"+max_difficulty);
+            if(difficulty > max_difficulty){
+                $(".bar").css("background", "red");
+            }
+            else {
+                $(".bar").css("background", "linear-gradient(90deg, lightskyblue "+ percent + "%, white " + percent + "%)");
+            }
 
+            let nb = $(this).parent().find(".creature-nb").text();
+            let nb_int = parseInt(nb.split("x")[1]);
+            nb_int++;
+            $(this).parent().find(".creature-nb").text("x"+nb_int);
         });
         $(".expand").click(function(){
             if ($(".table-responsive").hasClass("d-none")){

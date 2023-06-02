@@ -366,6 +366,7 @@ class MainController extends AbstractController
         $form->get('pc')->setData($player->getPc());
         $form->get('pr')->setData($player->getPr());
         $form->get('pm')->setData($player->getPm());
+        $form->get('em')->setData($player->getEm());
         $form->handleRequest($request);
         $error = false;
         if ($form->isSubmitted() && $form->isValid()){
@@ -402,6 +403,7 @@ class MainController extends AbstractController
             $player->setPc($form->get('pc')->getData());
             $player->setPr($form->get('pr')->getData());
             $player->setPm($form->get('pm')->getData());
+            $player->setEm($form->get('em')->getData());
             $entityManager->persist($player);
             $entityManager->flush();
             $this->addFlash('success', 'Points du personnage mis à jour !');

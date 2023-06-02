@@ -42,5 +42,14 @@ class PointForm extends AbstractType
             'label' => 'Points de mana actuels',
             'label_attr' => ['class' => 'form-label']
         ]);
+        $builder->add('em', IntegerType::class, [
+            'mapped' => false,
+            'attr' => [
+                'class' => 'form-control',
+                'min' => 0
+            ],
+            'label' => 'Épuisement magique',
+            'label_attr' => ['class' => 'form-label']
+        ]);
     }
 }
