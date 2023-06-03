@@ -102,6 +102,20 @@ class CreatureRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
+
+    public function findByNameBellowNc(string $name, int $nc): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.name LIKE :name')
+            ->andWhere('c.nc <= :nc')
+            ->setParameter('name', '%' . $name . '%')
+            ->setParameter('nc', $nc)
+            ->orderBy('c.nc', 'DESC')
+            ->addOrderBy('c.name', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
     
     public function findAllBellowNcOrderBy(int $nc, string $by, bool $asc): array
     {

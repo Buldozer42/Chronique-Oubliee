@@ -978,10 +978,19 @@ class MainController extends AbstractController
         {
             return $this->redirectToRoute('encounter_create', ['nc' => $form->getData()['number']]);
         }
-        $creatures = $createuRepository->findAllBellowNc($request->get('nc'));
+        $searchform = $this->createForm(EntitySearchType::class);
+        $searchform->handleRequest($request);
+        if ($searchform->isSubmitted() && $searchform->isValid()) {
+            $search = $searchform->get('search')->getData() ?? '';
+            $creatures = $createuRepository->findByNameBellowNc($search, $request->get('nc'));
+        }
+        else {
+            $creatures = $createuRepository->findAllBellowNc($request->get('nc'));
+        }
         return $this->render('encounter/encounter-create.html.twig', [
             'creatures' => $creatures,
             'form' => $form->createView(),
+            'searchform' => $searchform->createView(),
             'nc' => $request->get('nc')
         ]);
     }
