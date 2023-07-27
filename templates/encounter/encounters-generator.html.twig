@@ -3,7 +3,7 @@
 {% include 'navbar.html.twig' %}
 <div class="container"> 
     <h1>Générateur de rencontre</h1>
-    <div class="col-md-5">
+    <div class="col-md-6">
         {{ form_start(form, {'attr': {'id': 'entity-search-form', 'class': 'd-flex'}}) }}
 
         {{ form_widget(form.search, {'attr': {'class': 'form-control me-2'}}) }}
@@ -14,11 +14,12 @@
         
         {{ form_rest(form) }}
             <button type="submit" class="btn btn-primary mx-2">Ajouter</button>
+            <a href="{{ path('encounter_add_pj')}}"><button type="button" class="btn btn-primary">PJ</button></a>
             <!-- Modal trigger button -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNotepad">
+            <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal" data-bs-target="#modalNotepad">
                 Note
             </button>
-           <a href="{{ path('encounter_clear')}}"><button type="button" class="btn btn-danger mx-2">Nettoyer</button></a>
+           <a href="{{ path('encounter_clear')}}"><button type="button" class="btn btn-danger">Nettoyer</button></a>
         {{ form_end(form) }}
     </div>
 </div>

@@ -1006,6 +1006,24 @@ class MainController extends AbstractController
         $entityManager->flush();
         return $this->redirectToRoute('encountersgenerator');
     }
+    /**
+     * @Route("/encounter/add_pj", name="encounter_add_pj")
+     */
+    public function addPlayerToEncounter(EntityManagerInterface $entityManager, EncounterRepository $encounterRepository, 
+        PlayerRepository $playerRepository) : Response
+    {
+        $encounter = $encounterRepository->getFirst();
+        // $encounter->clearCharacters();
+        $playerNames= ['Wunjir Briseurdos', 'Legolas', 'Taranys', 'Maya Habrezi', 'Dénève Arcadia'];
+        foreach ($playerNames as $playerName) {
+            $player = $playerRepository->findByName($playerName)[0];
+            $entity = clone $player;
+            $encounter->addCharacter($entity);
+        }
+        $entityManager->persist($encounter);
+        $entityManager->flush();
+        return $this->redirectToRoute('encountersgenerator');
+    }
 
     //-----------------------------------------------------------------------------------//
 
