@@ -779,10 +779,16 @@ class MainController extends AbstractController
     /**
      * @Route("/encountersgenerator/remove/{name}", name="encountersgenerator_remove")
      */
-    public function removeFromEncounter(Request $request, EncounterRepository $encounterRepository, EntityManagerInterface $entityManager): Response
+    public function removeFromEncounter(Request $request, EncounterRepository $encounterRepository, 
+        PlayerRepository $playerRepository ,EntityManagerInterface $entityManager): Response
     {
         $encounter = $encounterRepository->getFirst();
         $entity = $encounter->getCharacterByName($request->attributes->get('name'));
+        if ($entity instanceof Player){
+            $player = $playerRepository->find($entity->getId());
+            $player->setHp($entity->getHp());
+            $player->setPm($entity->getPm());
+        }
         $encounter->removeCharacter($entity);
         $entityManager->persist($encounter);
         $entityManager->flush();
@@ -1001,9 +1007,17 @@ class MainController extends AbstractController
     /**
      * @Route("/encounter/clear", name="encounter_clear")
      */
-    public function clearEncounter(EntityManagerInterface $entityManager, EncounterRepository $encounterRepository) : Response
+    public function clearEncounter(EntityManagerInterface $entityManager, 
+        EncounterRepository $encounterRepository, PlayerRepository $playerRepository) : Response
     {
         $encounter = $encounterRepository->getFirst();
+        $tempPlayers = $encounter->getPlayers();
+        foreach ($tempPlayers as $tempPlayer) {
+            $player = $playerRepository->find($tempPlayer->getId());
+            $player->setHp($tempPlayer->getHp());
+            $player->setPm($tempPlayer->getPm());
+        }
+
         $encounter->clearCharacters();
         $entityManager->persist($encounter);
         $entityManager->flush();

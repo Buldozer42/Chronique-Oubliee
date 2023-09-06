@@ -63,8 +63,18 @@ class Encounter
     public function clearCharacters(): self
     {
         $this->characters = [];
-
         return $this;
+    }
+
+    public function getPlayers(): array
+    {
+        $players = [];
+        foreach ($this->characters as $character) {
+            if ($character instanceof Player) {
+                $players[] = $character;
+            }
+        }
+        return $players;
     }
 
     public function countCharactersById($id): int
