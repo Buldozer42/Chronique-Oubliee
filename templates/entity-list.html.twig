@@ -22,7 +22,7 @@
               aria-expanded="false">
                 {{ familyName == "" ? "Famille de créature" : familyName }}
               </button>
-          <div class="dropdown-menu" aria-labelledby="triggerId">
+          <div class="dropdown-menu scrollable-dropdown" aria-labelledby="triggerId">
             <a href="{{ path('creaturelist') }}" class="dropdown-item">Toutes</a>
             {% for family in families %}
               {% for name in family %}
@@ -137,4 +137,5 @@
     </table>
   </div>
 </div>
+<link rel="stylesheet" href="{{ asset('css/entity-list.css') }}">
 {% endblock %}

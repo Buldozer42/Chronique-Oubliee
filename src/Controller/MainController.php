@@ -8,7 +8,11 @@ use App\Repository\EncounterRepository;
 use App\Repository\PlayerRepository;
 use App\Entity\Creature;
 use App\Entity\DetrimentalState;
+use App\Entity\WildMagic;
+use App\Repository\WildMagicRepository;
 use App\Repository\CreatureRepository;
+use App\Entity\EncounterTable;
+use App\Repository\EncounterTableRepository;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Routing\Annotation\Route;
@@ -39,7 +43,7 @@ class MainController extends AbstractController
     /**
      * @Route("/", name="index")
      */
-    public function index(): Response
+    public function index(EntityManagerInterface $entityManager): Response
     {
         return $this->render('index.html.twig');
     }
@@ -97,7 +101,6 @@ class MainController extends AbstractController
     public function playerFormBase(FormInterface $form,Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger)
     {
         $form->handleRequest($request);
-        // $form->addError(new FormError('This is a global error'));
         if ($form->isSubmitted() && $form->isValid()) {
             $error = false;
             $player = $form->getData();
@@ -1013,7 +1016,7 @@ class MainController extends AbstractController
         PlayerRepository $playerRepository) : Response
     {
         $encounter = $encounterRepository->getFirst();
-        // $encounter->clearCharacters();
+
         $playerNames= ['Wunjir Briseurdos', 'Legolas', 'Taranys', 'Maya Habrezi', 'Dénève Arcadia'];
         foreach ($playerNames as $playerName) {
             $player = $playerRepository->findByName($playerName)[0];
@@ -1049,4 +1052,27 @@ class MainController extends AbstractController
         return $this->render('equipment/armor.html.twig');
     }
     //-----------------------------------------------------------------------------------//
+    // Table
+    //-----------------------------------------------------------------------------------//
+    /**
+     * @Route("/table/wild-magic", name="wild_magic")
+     */
+    public function wildMagic(Request $request, WildMagicRepository $wildMagicRepository): Response
+    {
+        return $this->render('table.html.twig', [
+            'title' => 'Table de magie sauvage',
+            'entitys' => $wildMagicRepository->findAll(),
+        ]);
+    }
+
+    /**
+     * @Route("/table/encounter", name="encounter_table")
+     */
+    public function encounterTable(Request $request, EncounterTableRepository $encounterTableRepository): Response
+    {
+        return $this->render('table.html.twig', [
+            'title' => 'Table de rencontre',
+            'entitys' => $encounterTableRepository->findAll(),
+        ]);
+    }
 }

@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+{% include 'navbar.html.twig' %}
+<div class="mx-4">
+    <h1>{{title}}</h1>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+            <th scope="col">Num</th>
+            <th scope="col">Nom</th>
+            <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entity in entitys %}
+            <tr>
+                <td>{{ entity.num }}</td>
+                <td>{{ entity.name }}</td>
+                <td>{{ entity.description }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+  </div>
+  {% if title == 'Table de rencontre' %}
+    <h5>Carte de tarot</h5>
+    <ul>
+        <li><strong>I Le Bateleur :</strong> Gagner 1d4+1 niveaux.</li> 
+        <li><strong>II La Papesse :</strong> Decouvrir un secret ancien.</li>
+        <li><strong>III L'Impératrice :</strong> Etudier pendant une longue période.</li>
+        <li><strong>IV L'Empereur :</strong> Prendre le commandement d'un groupe, d'un lieu ou d'une nation.</li>
+        <li><strong>V Le Pape :</strong> Devenir un représentant de Dieu.</li>
+        <li><strong>VI L'Amoureux :</strong> Vivre une histoire d'amour sincère.</li>
+        <li><strong>VII Le Chariot :</strong> Trahissez un de vos proches.</li>
+        <li><strong>VIII La Justice :</strong> Devenir un représentant de la loi.</li>
+        <li><strong>IX L'Hermite :</strong> S'isoler du monde pendant une longue période.</li>
+        <li><strong>X La Roue de Fortune :</strong> Gagner un total de 100 po aux jeux.</li>
+        <li><strong>XI La Force :</strong> Vaincre une puissante créature seul et à main nue.</li>
+        <li><strong>XII Le Pendu :</strong> Sacrifier ce que l'on as de plus cher.</li>
+        <li><strong>XIII L'Arcane sans nom :</strong> Perdez tous souvenir.</li>
+        <li><strong>XIV Tempérance :</strong> Guérir une maladie incurable.</li>
+        <li><strong>XV Le Diable :</strong> Commetre un crime ignoble.</li>
+        <li><strong>XVI La Maison Dieu :</strong> Mettez fin à votre vie.</li>
+        <li><strong>XVII L'Étoile :</strong> Suivez vos rêves. (Le PJ doit suivre les instructions de 5 rêves prémonitoires)</li>
+        <li><strong>XVIII La Lune :</strong> Rendez-vous dans un autre plan d'existence.</li>
+        <li><strong>XIX Le Soleil :</strong> Devenir célèbre dans tout le Royaume.</li>
+        <li><strong>XX Le Jugement :</strong> Libérer une personne emprisoné.</li>
+        <li><strong>XXI Le Monde :</strong> Survivez aux blessures d'une créature mythique.</li>
+        <li><strong>Le Fou :</strong> Compter fleurette à 12 espèce humanoïde différente.</li>
+    </ul>
+  {% endif %}
+</div>
+{% endblock %}

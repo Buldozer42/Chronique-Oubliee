@@ -154,7 +154,7 @@
                   <button class="btn btn-success btn-sm heal" data-entity-num="{{ loop.index - 1 }}">+</button>
               </div>
               {% if entity|class_name == "Player" %}
-                {% if entity.getModMag != 0 %}
+                {% if entity.getMaxPm != 0 %}
                 <div class="d-flex d-flex justify-content-between mt-2">
                     <button class="btn btn-danger btn-sm remove-mana" data-entity-num="{{ loop.index - 1 }}">-</button>
                     <div class="col-9 text-center border border-2 rounded mana-bar">
@@ -431,7 +431,6 @@
             {{ form_start(detrimentalform) }}
             {{ form_widget(detrimentalform.description) }}
             {{ form_widget(detrimentalform.entity_num) }}
-            
             {{ form_rest(detrimentalform) }}
                 <div class="d-grid gap-2 my-1">
                     <button type="submit" class="btn btn-primary detrimental-btn mt-2">Modifier</button>
