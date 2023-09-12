@@ -672,7 +672,6 @@ class MainController extends AbstractController
             $encounter = $encounterRepository->getFirst();
             $tempEntity = $encounter->getCharacters()[$hpForm->get('entity_num')->getData()];
             $requestType = $hpForm->get('request_type')->getData();
-            //throw new \Exception($requestType);
             $new_hp = $hpForm->get('entity_hp')->getData();
 
             $entity = clone $tempEntity;
@@ -703,6 +702,8 @@ class MainController extends AbstractController
 
         if ($encounterRepository->tableIsEmpty()){
             $encounter = new Encounter();
+            $encounter->setCurrentRound(0);
+            $encounter->setCurrentInit(0);
             $entityManager->persist($encounter);
             $entityManager->flush();
         }
@@ -735,6 +736,8 @@ class MainController extends AbstractController
 
         if ($encounterRepository->tableIsEmpty()){
             $encounter = new Encounter();
+            $encounter->setCurrentRound(0);
+            $encounter->setCurrentInit(0);
             $entityManager->persist($encounter);
             $entityManager->flush();
         }
@@ -773,6 +776,8 @@ class MainController extends AbstractController
             'pmForm' => $pmForm->createView(),
             'detrimentalform' => $detrimentalform->createView(),
             'entities' => $encounter->getCharacters(),
+            'round' => $encounter->getCurrentRound(),
+            'init' => $encounter->getCurrentInit(),
         ]);
     }
 
@@ -826,6 +831,42 @@ class MainController extends AbstractController
         }
 
         return new JsonResponse($results);
+    }
+
+    /**
+     * @Route("/encountersgenerator/next_round", name="encounter_next_round")
+     */
+    public function nextRound(Request $request, EncounterRepository $encounterRepository, EntityManagerInterface $entityManager): Response
+    {
+        $encounter = $encounterRepository->getFirst();
+        $encounter->nextRound();
+        $entityManager->persist($encounter);
+        $entityManager->flush();
+        return $this->redirectToRoute('encountersgenerator');
+    }
+    
+    /**
+     * @Route("/encountersgenerator/next_init", name="encounter_next_init")
+     */
+    public function nextInit(Request $request, EncounterRepository $encounterRepository, EntityManagerInterface $entityManager): Response
+    {
+        $encounter = $encounterRepository->getFirst();
+        $encounter->nextInit();
+        $entityManager->persist($encounter);
+        $entityManager->flush();
+        return $this->redirectToRoute('encountersgenerator');
+    }
+
+    /**
+     * @Route("/encountersgenerator/reset_round_and_init", name="encounter_reset_round_and_init")
+     */
+    public function resetRoundAndInit(Request $request, EncounterRepository $encounterRepository, EntityManagerInterface $entityManager): Response
+    {
+        $encounter = $encounterRepository->getFirst();
+        $encounter->resetRoundAndInit();
+        $entityManager->persist($encounter);
+        $entityManager->flush();
+        return $this->redirectToRoute('encountersgenerator');
     }
 
     private function manageHp(Request $request, EncounterRepository $encounterRepository, EntityManagerInterface $entityManager, $type): JsonResponse
@@ -1019,6 +1060,8 @@ class MainController extends AbstractController
         }
 
         $encounter->clearCharacters();
+        $encounter->setCurrentInit(0);
+        $encounter->setCurrentRound(0);
         $entityManager->persist($encounter);
         $entityManager->flush();
         return $this->redirectToRoute('encountersgenerator');

@@ -21,6 +21,16 @@
             </button>
            <a href="{{ path('encounter_clear')}}"><button type="button" class="btn btn-danger">Nettoyer</button></a>
         {{ form_end(form) }}
+        {# {% if round != 0  and init != 0 %} #}
+        <div class="d-flex ps-2 mt-3">
+            <h4 class="">Tour actuel : {{ round }}</h4>
+            {# <a href="{{ path('encounter_next_round')}}"><button type="button" class="btn btn-sm btn-primary ms-2">Suivant</button></a> #}
+
+            <h4 class="ms-2">Initiative actuel : {{ init }}</h4>
+            <a href="{{ path('encounter_next_init')}}"><button type="button" class="btn btn-sm btn-primary ms-2">Suivant</button></a>
+            <a href="{{ path('encounter_reset_round_and_init')}}"><button type="button" class="btn btn-sm btn-primary ms-2">Reset</button></a>
+        </div>
+        {# {% endif %} #}
     </div>
 </div>
 <!-- Modal Note -->
@@ -63,7 +73,11 @@
     <div class="row mt-4">
         {% for entity in entities %}
         <div class="col-4 mb-4">
-          <div class="{{'card entity' ~ (loop.index - 1) }}">
+          <div class="{{'card entity' ~ (loop.index - 1) }}"
+          {% if entity.init == init %}
+            style="background: #9de0ad;"
+          {% endif %}
+          >
             <div class="card-body">
               <div class="d-flex align-items-center">
                 {% if entity|class_name == "Player" %}
