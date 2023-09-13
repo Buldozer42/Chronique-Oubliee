@@ -1,10 +1,5 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-<style>
-    .size-cell{
-        width : 33%;
-    }
-</style>
 {% include 'navbar.html.twig' %}
 <div class="container">
     <div class="text-center">
@@ -404,4 +399,5 @@
         {% endif %}
     </div>
 </div>
+<link rel="stylesheet" href="{{ asset('css/sheet.css') }}">
 {% endblock %}
