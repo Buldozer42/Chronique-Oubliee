@@ -994,6 +994,12 @@ class MainController extends AbstractController
             case 'surprised':
                 $detrimentalState->setDescription("Pas d’action, DEF -5 au 1er tour de combat");
                 break;
+            case 'rage':
+                $detrimentalState->setDescription("Att.con +2, 1d6 DM.con, -4 DEF");
+                break;
+            case 'fury':
+                $detrimentalState->setDescription("Att.con +3, +2d6 DM.con, -6 DEF");
+                break;
             default:
                 $detrimentalState->setDescription("");
                 break;

@@ -988,6 +988,14 @@ class Player
             $this->setDef($this->getDef() - 5);
             $this->setAttDis($this->getAttDis() - 5);
         }
+        elseif ($detrimental_state->getName() === 'rage'){
+            $this->setAttCon($this->getAttCon() + 2);
+            $this->setDef($this->getDef() - 4);
+        }
+        elseif ($detrimental_state->getName() === 'fury'){
+            $this->setAttCon($this->getAttCon() + 3);
+            $this->setDef($this->getDef() - 6);
+        }
     }
 
     private function removeDetrimentalState(DetrimentalState $detrimental_state) : void
@@ -1008,6 +1016,14 @@ class Player
             $this->setAttCon($this->getAttCon() + 5);
             $this->setDef($this->getDef() + 5);
             $this->setAttDis($this->getAttDis() + 5);
+        }
+        elseif ($detrimental_state->getName() === 'rage'){
+            $this->setAttCon($this->getAttCon() - 2);
+            $this->setDef($this->getDef() + 4);
+        }
+        elseif ($detrimental_state->getName() === 'fury'){
+            $this->setAttCon($this->getAttCon() - 3);
+            $this->setDef($this->getDef() + 6);
         }
     }
 

@@ -24,8 +24,6 @@
         {# {% if round != 0  and init != 0 %} #}
         <div class="d-flex ps-2 mt-3">
             <h4 class="">Tour actuel : {{ round }}</h4>
-            {# <a href="{{ path('encounter_next_round')}}"><button type="button" class="btn btn-sm btn-primary ms-2">Suivant</button></a> #}
-
             <h4 class="ms-2">Initiative actuel : {{ init }}</h4>
             <a href="{{ path('encounter_next_init')}}"><button type="button" class="btn btn-sm btn-primary ms-2">Suivant</button></a>
             <a href="{{ path('encounter_reset_round_and_init')}}"><button type="button" class="btn btn-sm btn-primary ms-2">Reset</button></a>
@@ -130,6 +128,17 @@
                         <img src="{{ asset('svg/surprised.svg') }}" alt="surprised" width="20" height="20">
                         <span>Surpris</span>
                     </a>
+                    {% if entity.class in ["Barbare", "Guerrier totémique"] %}
+                        <a class="dropdown-item d-flex" title="Att.con +2, +1d6 DM.con, -4 DEF"
+                            href="{{ path('set_detrimental_state', {'num': (loop.index - 1), 'state': 'rage'}) }}">
+                        <img src="{{ asset('svg/rage.svg') }}" alt="rage" width="20" height="20">
+                        <span>Rage</span>
+                        <a class="dropdown-item d-flex" title="Att.con +3, +2d6 DM.con, -6 DEF"
+                            href="{{ path('set_detrimental_state', {'num': (loop.index - 1), 'state': 'fury'}) }}">
+                        <img src="{{ asset('svg/fury.svg') }}" alt="fury" width="20" height="20">
+                        <span>Furie</span>
+                    </a>
+                    {% endif %}
                     <div class="detrimental-state-form px-2" title="">
                     </div>
                   </div>
