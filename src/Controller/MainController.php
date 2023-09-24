@@ -1074,7 +1074,8 @@ class MainController extends AbstractController
     {
         $encounter = $encounterRepository->getFirst();
 
-        $playerNames= ['Wunjir Briseurdos', 'Legolas', 'Taranys', 'Maya Habrezi', 'Dénève Arcadia'];
+        $playerNames= ['Wunjir Briseurdos', 'Legolas', 'Taranys', 'Jarenth Daardendrian'];
+        // $playerNames= ['Gorlock', 'Ultor Luppiter', 'Yves Reumore', 'Guram'];
         foreach ($playerNames as $playerName) {
             $player = $playerRepository->findByName($playerName)[0];
             $entity = clone $player;
