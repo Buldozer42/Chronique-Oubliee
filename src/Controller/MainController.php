@@ -43,7 +43,7 @@ class MainController extends AbstractController
     /**
      * @Route("/", name="index")
      */
-    public function index(EntityManagerInterface $entityManager): Response
+    public function index(EntityManagerInterface $entityManager, PlayerRepository $playerRepository): Response
     {
         return $this->render('index.html.twig');
     }
@@ -1076,17 +1076,22 @@ class MainController extends AbstractController
      * @Route("/encounter/add_pj", name="encounter_add_pj")
      */
     public function addPlayerToEncounter(EntityManagerInterface $entityManager, EncounterRepository $encounterRepository, 
-        PlayerRepository $playerRepository) : Response
+        PlayerRepository $playerRepository, CreatureRepository $creatureRepository) : Response
     {
         $encounter = $encounterRepository->getFirst();
 
-        $playerNames= ['Wunjir Briseurdos', 'Legolas', 'Taranys', 'Jarenth Daardendrian'];
-        // $playerNames= ['Gorlock', 'Ultor Luppiter', 'Yves Reumore', 'Guram'];
+        $playerNames= ['Gorlock', 'Hermaeus Eldritch', 'Guram', 'Aldric Valerius'];
         foreach ($playerNames as $playerName) {
             $player = $playerRepository->findByName($playerName)[0];
             $entity = clone $player;
             $encounter->addCharacter($entity);
         }
+        // $creatureNames= ['Cheval de guerre léger'];
+        // foreach ($creatureNames as $creatureName) {
+        //     $creature = $creatureRepository->findByName($creatureName)[0];
+        //     $entity = clone $creature;
+        //     $encounter->addCharacter($entity);
+        // }
         $entityManager->persist($encounter);
         $entityManager->flush();
         return $this->redirectToRoute('encountersgenerator');
