@@ -164,6 +164,15 @@
                         <span class="material-symbols-outlined">menu_book</span>
                         <p class="card-text">: {{ entity.getAttMag }}</p>
                     {% endif %}
+                    {% for item in entity.inventory %}
+                        {% if "bouclier" in item.name %}
+                            <span class="material-symbols-outlined">shield</span>
+                            {% set parts = item.name|split('(') %}
+                            {% set numberPart = parts[1]|split(' ')|first %}
+                            {% set number = numberPart|trim('+') %}
+                            <p class="card-text">: {{ number }}</p>
+                        {% endif %}
+                    {% endfor %}
                 {% else %}
                     <span class="material-symbols-outlined">shield_lock</span>
                     <p class="card-text">: {{ entity.rd }}/{{entity.getRdComment}}</p>
