@@ -19,11 +19,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use App\Form\Type\PlayerFormType;
-use App\Form\Type\CreatureFormType;
+use App\Form\PlayerFormType;
+use App\Form\CreatureFormType;
 use App\Form\EntitySearchType;
-use App\Form\Type\NumberType;
-use App\Form\Type\DetrimentalStateType;
+use App\Form\NumberType;
+use App\Form\DetrimentalStateType;
 use App\Form\ManageHpType;
 use App\Form\ManagePmType;
 use App\Form\LevelUpForm;
@@ -1080,7 +1080,7 @@ class MainController extends AbstractController
     {
         $encounter = $encounterRepository->getFirst();
 
-        $playerNames= ['Gorlock', 'Hermaeus Eldritch', 'Guram', 'Aldric Valerius'];
+        $playerNames= ['Gorlock', 'Hermaeus Eldritch', 'Guram'];
         foreach ($playerNames as $playerName) {
             $player = $playerRepository->findByName($playerName)[0];
             $entity = clone $player;

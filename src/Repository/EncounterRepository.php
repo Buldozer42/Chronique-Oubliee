@@ -46,7 +46,7 @@ class EncounterRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
 
-        return $query === '0';
+        return $query == 0;
     }
 
     public function getFirst(): ?Encounter

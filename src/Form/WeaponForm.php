@@ -8,7 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\{TextType, IntegerType};
 
 class WeaponForm extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         for ($i = 1; $i <= 3; $i++) {
             $builder->add('weapon'. $i .'_name', TextType::class, [
